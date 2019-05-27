@@ -19,7 +19,7 @@ output.path <- "4 data queries/190525 Anne Krueger/output/"
 # of how high they were/are?
 
 # GET LIST OF INTERVENTIONS
-interventions <- read.csv("data/database replica/gta_intervention.csv",sep=",")
+interventions <- read.csv("data/database replica/gta_intervention.csv",sep=",", stringsAsFactors = F)
 
 # GET INTERVENTION IDS FOR RECENT YEAR US AGAINST CHINA MAST CHAPTER D
 gta_data_slicer(gta.evaluation = c("Red","Amber"),
@@ -51,6 +51,7 @@ interventions <- subset(interventions, id %in% intervention.ids)
 
 # SEARCH REGULAR EXPRESSION FOR PERCENTAGES
 interventions$description <- as.character(interventions$description)
+
 for(i in 1:nrow(interventions)) {
   interventions$str.extract[i] <- ifelse(length(unlist(str_extract_all(interventions$description[i], "(?<![A-Za-z0-9.\\S])[0-9.\\-]+(\\%)")))>0, paste(unlist(str_extract_all(interventions$description[i], "(?<![A-Za-z0-9.\\S])[0-9.\\-]+(\\%)")), collapse=", "),NA)
 }
