@@ -74,7 +74,8 @@ tw.sa.us=c(27158, 27214, 28096, 27215, 27906)
 gta_data_slicer(gta.evaluation = c("Red","Amber"),
                 affected.country = 156,
                 implementing.country = 840,
-                keep.affected = T)
+                keep.affected = T,
+                keep.others = F)
 
 # GET INTERVENTIONS WHICH BELONG TO TRADE WAR IMPLEMENTED BY US
 interventions <- subset(master.sliced, state.act.id %in% tw.sa.us)
