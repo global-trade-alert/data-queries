@@ -111,8 +111,13 @@ gta_trade_coverage(gta.evaluation = c("red","amber"),
 
 covered.now=trade.coverage.estimates
 
+# how much of Chinese steel was 
+# already subject AD and CVD tariffs before the steel tariffs 
+# went generally into effect?
 covered.now[1,4]
-covered.already[1,4]
+covered.already[1,4] # <-- that's the answer
+
+
 
 # WHEN WAS THE FIRST OF THESE INTERVENTIONS IMPLEMENTED?
 start.t.tariffs <- min(as.Date(interventions$date.implemented))
