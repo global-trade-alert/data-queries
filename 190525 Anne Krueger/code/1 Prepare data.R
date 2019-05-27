@@ -80,6 +80,39 @@ gta_data_slicer(gta.evaluation = c("Red","Amber"),
 # GET INTERVENTIONS WHICH BELONG TO TRADE WAR IMPLEMENTED BY US
 interventions <- subset(master.sliced, state.act.id %in% trump.steel.alu)
 steel.tariffs=unique(cSplit(interventions, which(names(interventions)=="affected.product"), sep=",", direction="long")$affected.product)
+steel.interventions=unique(interventions$intervention.id)
+
+gta_trade_coverage(gta.evaluation = c("red","amber"),
+                   mast.chapters = "D",
+                   keep.mast=T,
+                   importer = 840,
+                   keep.importer = T,
+                   exporters = 156,
+                   keep.exporters = T,
+                   hs.codes = steel.tariffs,
+                   keep.hs = T,
+                   implementation.period = c(NA, "2018-03-23"),
+                   coverage.period = c(2018,2018),
+                   intra.year.duration = F)
+
+covered.already=trade.coverage.estimates
+
+gta_trade_coverage(gta.evaluation = c("red","amber"),
+                   intervention.ids = steel.interventions,
+                   keep.interventions = T,
+                   importer = 840,
+                   keep.importer = T,
+                   exporters = 156,
+                   keep.exporters = T,
+                   hs.codes = steel.tariffs,
+                   keep.hs = T,
+                   coverage.period = c(2018,2018),
+                   intra.year.duration = F)
+
+covered.now=trade.coverage.estimates
+
+covered.now[1,4]
+covered.already[1,4]
 
 # WHEN WAS THE FIRST OF THESE INTERVENTIONS IMPLEMENTED?
 start.t.tariffs <- min(as.Date(interventions$date.implemented))
