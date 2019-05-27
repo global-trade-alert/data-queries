@@ -11,6 +11,8 @@ setwd("/Users/patrickbuess/Dropbox/Collaborations/GTA cloud")
 
 output.path <- "4 data queries/190525 Anne Krueger/output/"
 
+
+
 # 1. Is there a list of the trade remedy actions in effect by the 
 # US against China for a recent year? Is there an estimate of the 
 # average height of the dumping margins or any other useful indicator 
@@ -55,6 +57,7 @@ for(i in 1:nrow(interventions)) {
 # NOT MUCH DATA ON DUMPING MARGINS AVAILABLE...
   
   
+
 # 2. Is there a calculation of how much of Chinese steel was 
 # already subject AD and CVD tariffs before the steel tariffs 
 # went generally into effect? Is there an estimate of the average 
@@ -69,7 +72,6 @@ gta_data_slicer(gta.evaluation = c("Red","Amber"),
                 affected.country = 156,
                 implementing.country = 840,
                 keep.affected = T)
-
 
 # GET INTERVENTIONS WHICH BELONG TO TRADE WAR IMPLEMENTED BY US
 interventions <- subset(master.sliced, state.act.id %in% tw.sa.us)
@@ -108,6 +110,7 @@ trade.coverage.estimates$`Exporting country` <- "China"
 write.xlsx(trade.coverage.estimates, file=paste0(output.path,"Trade coverages for Chinese steel exports to USA.xlsx"), sheetName = "Coverages", row.names=F)
 
   
+
 # 3. Do you have a good recent estimate of other percentage of 
 # US imports subject to trade remedy tariff margins? It could be 
 # any measure: how much of earlier imports were covered or current 
