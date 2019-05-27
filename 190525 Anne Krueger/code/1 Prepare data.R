@@ -68,7 +68,7 @@ for(i in 1:nrow(interventions)) {
 source("0 report production/GTA 23/help files/GTA 23 cutoff and definitions.R")
 
 ## what are you doing here? Those seem to be the intervention IDs from the source.
-tw.sa.us=c(27158, 27214, 28096, 27215, 27906)
+trump.steel.alu=c(27158, 27214)
 
 # GET LIST OF INTERVENTIONS
 gta_data_slicer(gta.evaluation = c("Red","Amber"),
@@ -78,7 +78,8 @@ gta_data_slicer(gta.evaluation = c("Red","Amber"),
                 keep.others = F)
 
 # GET INTERVENTIONS WHICH BELONG TO TRADE WAR IMPLEMENTED BY US
-interventions <- subset(master.sliced, state.act.id %in% tw.sa.us)
+interventions <- subset(master.sliced, state.act.id %in% trump.steel.alu)
+steel.tariffs=unique(cSplit(interventions, which(names(interventions)=="affected.product"), sep=",", direction="long")$affected.product)
 
 # WHEN WAS THE FIRST OF THESE INTERVENTIONS IMPLEMENTED?
 start.t.tariffs <- min(as.Date(interventions$date.implemented))
