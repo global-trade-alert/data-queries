@@ -66,6 +66,8 @@ for(i in 1:nrow(interventions)) {
 
 # TRUMP'S STEEL TARIFFS TAKEN FROM GTA23 HELP FILE
 source("0 report production/GTA 23/help files/GTA 23 cutoff and definitions.R")
+
+## what are you doing here? Those seem to be the intervention IDs from the source.
 tw.sa.us=c(27158, 27214, 28096, 27215, 27906)
 
 # GET LIST OF INTERVENTIONS
