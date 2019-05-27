@@ -33,10 +33,10 @@ gta_data_slicer(gta.evaluation = c("Red","Amber"),
                 keep.others = F,
                 in.force.today = T)
 
-master <- master.sliced[,c("intervention.type", "intervention.id", "state.act.id", "title", "date.announced", "date.implemented", "date.removed", "gta.evaluation", "date.published", "implementing.jurisdiction", "affected.sector", "affected.product", "affected.jurisdiction", "mast.id", "mast.chapter")]
+master <- unique(master.sliced[,c("intervention.type", "intervention.id", "state.act.id", "title", "date.announced", "date.implemented", "date.removed", "gta.evaluation", "implementing.jurisdiction", "affected.sector", "affected.product", "affected.jurisdiction", "mast.id", "mast.chapter")])
 
 # ADD URL
-master$url <- paste0("https://www.globaltradealert.org/state-act/", master$state.act.id)
+master$gta.url <- paste0("https://www.globaltradealert.org/state-act/", master$state.act.id)
 
 # REMOVE UNNECESSARY COLUMNS
 master.xlsx <- master
