@@ -16,7 +16,7 @@ period.2 <- c("2008-11-01", "2010-12-31")
 # January 2011 - December 2016
 period.3 <- c("2011-01-01", "2016-12-31")
 periods <- list(period.1, period.2, period.3)
-years.need=c(2008, 2010, 2011, 2016) # in the external data for SE's requests
+years.needed=c(2008, 2010, 2011, 2016) # in the external data for SE's requests
 
 
 # COUNTRY GROUPS
