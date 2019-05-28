@@ -3,6 +3,7 @@ library("xlsx")
 library("tidyverse")
 library("splitstackshape")
 library("lubridate")
+library("WDI")
 
 rm(list=ls())
 
@@ -48,10 +49,29 @@ countries$ISO[countries$gta.name == "Timor-Leste"] <- "TLS"
 #---------------------------------------------#
 
 # source: https://databank.worldbank.org/data/reports.aspx?source=2&series=NE.CON.GOVT.KN
-gov.spending <- read.csv(paste0(resources.path,"World Bank - Government Financial Consumption Expenditure 2008-2018.csv"), sep=",", stringsAsFactors = F)
+# gov.spending <- read.csv(paste0(resources.path,"World Bank - Government Financial Consumption Expenditure 2008-2018.csv"), sep=",", stringsAsFactors = F)
+# 
+# gov.spending[,c("X...Series.Name", "Series.Code")] <- NULL
+# names(gov.spending) <- c("name","ISO",2007:2018)
+gov.spending=WDI(indicator="NE.CON.GOVT.KN", start=2007, end=2018, extra=T)
+gov.spending=subset(gov.spending, is.na(NE.CON.GOVT.KN)==F & year %in% years.needed & iso3c %in% countries$ISO)
 
-gov.spending[,c("X...Series.Name", "Series.Code")] <- NULL
-names(gov.spending) <- c("name","ISO",2007:2018)
+gov.spending2=WDI(indicator="NE.CON.GOVT.KD", start=2007, end=2018, extra=T)
+gov.spending2=subset(gov.spending2, is.na(NE.CON.GOVT.KD)==F & year %in% years.needed & iso3c %in% countries$ISO)
+
+cty.presence=aggregate(year ~ iso3c, gov.spending, function(x) length(unique(x)))
+cty.presence2=aggregate(year ~ iso3c, gov.spending2, function(x) length(unique(x)))
+
+# missing g20 members
+countries$ISO[countries$G20==1][!countries$ISO[countries$G20==1] %in% cty.presence$iso3c[cty.presence$year==length(years.needed)]]
+countries$ISO[countries$G20==1][!countries$ISO[countries$G20==1] %in% cty.presence2$iso3c[cty.presence2$year==length(years.needed)]]
+
+## Please do the same check for:
+# 1) number of next 20 in the set
+# 2) number of countries with full coverage
+# choose whatever data set is best. If they are the same, use .KN as requested by SE.
+
+
 
 # ADD UN CODES AND GTA NAMES
 gov.spending <- merge(gov.spending, countries[,c("UN", "ISO")], by="ISO")
