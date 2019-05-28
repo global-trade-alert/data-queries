@@ -19,6 +19,13 @@ source("4 data queries/190526 Simon Paper - Policy intervention and substituabil
 
 # FOR EACH PERIOD
 
+## initialise choices
+traditional.types=c("E1", "E2", "E5", "E6", "E9",
+                    unique(as.character(int.mast.types$mast.subchapter.id[int.mast.types$mast.chapter.id %in% c("D","TARIFF")])))
+                      
+subsidy.types=c("P7", "P8", unique(as.character(int.mast.types$mast.subchapter.id[int.mast.types$mast.chapter.id=="L"])))
+
+
 # PREPARE SETS
 harmful.set <- data.frame()
 
@@ -75,7 +82,7 @@ for (p in 1:length(periods)) {
     # SET MAST CHAPTER TO MAST AND OTHER
     traditional$mast.chapter <- as.character(traditional$mast.chapter)
     traditional$mast <- "Other"
-    traditional$mast[traditional$mast.chapter %in% c("D","TARIFF") | traditional$mast.id %in% c("E1", "E2", "E5", "E6", "E9")] <- "MAST"
+    traditional$mast[traditional$mast.id %in% traditional.types] <- "MAST"
     
     
     # AGGREGATE ON BASIS OF MAST CHAPTER AND YEAR
@@ -105,7 +112,7 @@ for (p in 1:length(periods)) {
     # SET MAST CHAPTER TO MAST AND OTHER
     subsidy$mast.chapter <- as.character(subsidy$mast.chapter)
     subsidy$mast <- "Other"
-    subsidy$mast[subsidy$mast.chapter %in% c("L") | subsidy$mast.id %in% c("P7", "P8")] <- "MAST"
+    subsidy$mast[subsidy$mast.id %in% subsidy.types] <- "MAST"
   
     
     # AGGREGATE ON BASIS OF MAST CHAPTER AND YEAR
