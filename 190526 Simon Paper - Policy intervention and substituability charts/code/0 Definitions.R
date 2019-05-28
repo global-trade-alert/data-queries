@@ -28,7 +28,7 @@ all <- country.names[,c("un_code","name")]
 
 # G20
 # - G20
-g20 <- correspondence$un_code[correspondence$name == "G20" & correspondence$un_code %in% unique(country.names$un_code)]
+g20 <- country.names$un_code[country.names$is.g20==T]
 
 # nextG20 
 # - "Next 20" (being the 20 nations whose total exports and imports in 2007 where the largest that are not members of the G20)
