@@ -35,13 +35,22 @@ g20 <- country.names$un_code[country.names$is.g20==T]
 # - "Next 20" (being the 20 nations whose total exports and imports in 2007 where the largest that are not members of the G20)
 gta_trade_value_bilateral(trade.data = 2007)
 nextg20 <- aggregate(trade.value ~ a.un, trade.base.bilateral, function(x) sum(x)) # ONLY USING EXPORTS TO CALCULATE LARGEST, SHOULD IMPORTS BE INCLUDED TOO?
-nextg20 <- subset(nextg20, ! a.un %in% g20)
+nextg20 <- subset(nextg20, ! a.un %in% c(g20, country.names$un_code[country.names$is.eu==T]))
 nextg20 <- nextg20[with(nextg20, order(-trade.value)),]
 row.names(nextg20) <- NULL
 nextg20 <- nextg20[1:20,c("a.un")]
 
+
 groups <- list(all$un_code, g20, nextg20)
 groups.name <- c("all","g20","nextg20")
+
+
+## initialise MAST choices
+traditional.types=c("E1", "E2", "E5", "E6", "E9",
+                    unique(as.character(int.mast.types$mast.subchapter.id[int.mast.types$mast.chapter.id %in% c("D","TARIFF")])))
+
+subsidy.types=c("P7", "P8", unique(as.character(int.mast.types$mast.subchapter.id[int.mast.types$mast.chapter.id=="L"])))
+export.promotion.measures=c("P7","P8")
 
 
 # REMOVE UNUSED SETS
