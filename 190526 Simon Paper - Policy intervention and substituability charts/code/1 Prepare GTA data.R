@@ -37,6 +37,9 @@ subsidy.set <- data.frame(name = character(),
 
 for (p in 1:length(periods)) {
   
+  gta_data_slicer(implementation.period = c(periods[[p]][1], periods[[p]][2]),
+                  keep.implementation.na = F)
+  
   for(g in 1:length(groups)) {
   
     print(paste0("Period: ",p))
@@ -45,10 +48,7 @@ for (p in 1:length(periods)) {
     # Let "% harmful" refer to the total number of red or amber implemented measures 
     # as a % of the total number of implemented measures by a jurisdiction.
     
-    gta_data_slicer(implementation.period = c(periods[[p]][1], periods[[p]][2]),
-                    keep.implementation.na = F,
-                    implementing.country = groups[[g]])
-    harmful <- master.sliced
+    harmful <- subset(master.sliced, i.un %in% groups[[g]])
     
     # SET HARMFUL AND LIBERALISING
     harmful$gta.evaluation[harmful$gta.evaluation != "Green"] <- "Harmful"
