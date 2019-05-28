@@ -19,28 +19,6 @@ source("4 data queries/190526 Simon Paper - Policy intervention and substituabil
 #                                             #
 #---------------------------------------------#
 
-# CLEAN COUNTRIES FILE
-countries <- read.csv("R help files/country_iso_un.csv",sep=";", stringsAsFactors = F)
-
-# USED TO ADD UN CODES TO WORLD BANK DATASET
-countries$ISO[countries$gta.name == "Monaco"] <- "MCO"
-countries$ISO[countries$gta.name == "Micronesia"] <- "FSM"
-countries$ISO[countries$gta.name == "Antigua & Barbuda"] <- "ATG"
-countries$ISO[countries$gta.name == "Faeroe Islands"] <- "FRO"
-countries$ISO[countries$gta.name == "Grenada"] <- "GRD"
-countries$ISO[countries$gta.name == "Greenland"] <- "GRL"
-countries$ISO[countries$gta.name == "Liechtenstein"] <- "LIE"
-countries$ISO[countries$gta.name == "Macao"] <- "MAC"
-countries$ISO[countries$gta.name == "Saint-Martin"] <- "MAF"
-countries$ISO[countries$gta.name == "Marshall Islands"] <- "MHL"
-countries$ISO[countries$gta.name == "Northern Mariana Islands"] <- "MNP"
-countries$ISO[countries$gta.name == "Nauru"] <- "NRU"
-countries$ISO[countries$gta.name == "Palau"] <- "PLW"
-countries$ISO[countries$gta.name == "French Polynesia"] <- "PYF"
-countries$ISO[countries$gta.name == "San Marino"] <- "SMR"
-countries$ISO[countries$gta.name == "Turks & Caicos Islands"] <- "TCA"
-countries$ISO[countries$gta.name == "Timor-Leste"] <- "TLS"
-
 
 #---------------------------------------------#
 #                                             #
@@ -54,17 +32,17 @@ countries$ISO[countries$gta.name == "Timor-Leste"] <- "TLS"
 # gov.spending[,c("X...Series.Name", "Series.Code")] <- NULL
 # names(gov.spending) <- c("name","ISO",2007:2018)
 gov.spending=WDI(indicator="NE.CON.GOVT.KN", start=2007, end=2018, extra=T)
-gov.spending=subset(gov.spending, is.na(NE.CON.GOVT.KN)==F & year %in% years.needed & iso3c %in% countries$ISO)
+gov.spending=subset(gov.spending, is.na(NE.CON.GOVT.KN)==F & year %in% years.needed & iso3c %in% country.names$iso_code)
 
 gov.spending2=WDI(indicator="NE.CON.GOVT.KD", start=2007, end=2018, extra=T)
-gov.spending2=subset(gov.spending2, is.na(NE.CON.GOVT.KD)==F & year %in% years.needed & iso3c %in% countries$ISO)
+gov.spending2=subset(gov.spending2, is.na(NE.CON.GOVT.KD)==F & year %in% years.needed & iso3c %in% country.names$iso_code)
 
 cty.presence=aggregate(year ~ iso3c, gov.spending, function(x) length(unique(x)))
 cty.presence2=aggregate(year ~ iso3c, gov.spending2, function(x) length(unique(x)))
 
 # missing g20 members
-countries$ISO[countries$G20==1][!countries$ISO[countries$G20==1] %in% cty.presence$iso3c[cty.presence$year==length(years.needed)]]
-countries$ISO[countries$G20==1][!countries$ISO[countries$G20==1] %in% cty.presence2$iso3c[cty.presence2$year==length(years.needed)]]
+country.names$iso_code[country.names$is.g20==T][! country.names$iso_code[country.names$is.g20==T] %in% cty.presence$iso3c[cty.presence$year==length(years.needed)]]
+country.names$iso_code[country.names$is.g20==T][! country.names$iso_code[country.names$is.g20==T] %in% cty.presence2$iso3c[cty.presence2$year==length(years.needed)]]
 
 ## Please do the same check for:
 # 1) number of next 20 in the set
@@ -74,14 +52,15 @@ countries$ISO[countries$G20==1][!countries$ISO[countries$G20==1] %in% cty.presen
 
 
 # ADD UN CODES AND GTA NAMES
-gov.spending <- merge(gov.spending, countries[,c("UN", "ISO")], by="ISO")
-gov.spending[,c("name","ISO")] <- NULL
-setnames(gov.spending, "UN","un_code")
+setnames(gov.spending, "iso3c","iso_code")
+gov.spending <- merge(gov.spending, country.names[,c("un_code", "iso_code")], by="iso_code")
+gov.spending[,c("country","iso_code")] <- NULL
+
 gov.spending <- merge(gov.spending, all, by="un_code")
 
 # RESHAPE
-gov.spending <- gov.spending[,c("name","un_code",paste0(2007:2018))]
-gov.spending <- gather(gov.spending, year, value, 3:ncol(gov.spending))
+setnames(gov.spending, "NE.CON.GOVT.KN","value")
+gov.spending=gov.spending[,c("name","un_code","year","value")]
 
 # CALCULATE GROWTH RATES
 gov.spending$value <- as.numeric(gov.spending$value)
