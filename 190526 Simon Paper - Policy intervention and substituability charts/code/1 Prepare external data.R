@@ -49,6 +49,8 @@ country.names$iso_code[country.names$is.g20==T][! country.names$iso_code[country
 # 2) number of countries with full coverage
 # choose whatever data set is best. If they are the same, use .KN as requested by SE.
 
+## restricting to complete set
+gov.spending=subset(gov.spending, iso3c %in% subset(cty.presence, year==4)$iso3c)
 
 
 # ADD UN CODES AND GTA NAMES
@@ -63,30 +65,57 @@ setnames(gov.spending, "NE.CON.GOVT.KN","value")
 gov.spending=gov.spending[,c("name","un_code","year","value")]
 
 # CALCULATE GROWTH RATES
-gov.spending$value <- as.numeric(gov.spending$value)
-gov.spending[is.na(gov.spending)] <- NA
+# SE wants a scatter plot with one dot per country. 
+# Also, the growth rates have to be calculated for each period separtely.
+gov.spending.result=data.frame()
 
-# CALCULATE GROUP VALUES
-gov.spending.result <- data.frame(name=character(),
-                                  value=numeric(),
-                                  year=numeric())
-
-# COMPUTE SUMS PER GROUP AND... 
-for (g in 1:length(groups)) {
-  
-  gov.temp <- aggregate(value ~ year, subset(gov.spending, un_code %in% groups[[g]]), function(x) sum(x))
-  
-  gov.spending.result <- rbind(gov.spending.result, data.frame(name=groups.name[g],
-                                                               value=gov.temp$value,
-                                                               year=gov.temp$year))
+for(i in unique(gov.spending$un_code)){
+  for(prd in 1:3){
+    yr.start=year(periods[[prd]])[1]
+    yr.end=year(periods[[prd]])[2]
+    
+    gr=subset(gov.spending, un_code==i & year==yr.end)$value/subset(gov.spending, un_code==i & year==yr.start)$value -1
+    
+    gov.spending.result=rbind(gov.spending.result,
+                              data.frame(un_code=i,
+                                         name=country.names$name[country.names$un_code==i],
+                                         period.id=prd,
+                                         period.start=yr.start,
+                                         period.end=yr.end,
+                                         growth.rate=gr,
+                                         stringsAsFactors = F))
+    
+    rm(gr)
+    
+  }
+  print(i)
 }
 
-# ... CALCULATE GROWTH VALUES FOR THE SUMS
-gov.spending.result$growth <- with(gov.spending.result, ave(value, name, 
-                                      FUN=function(x) c(NA, diff(x)/x[-length(x)]) ))
 
-gov.spending.result$year <- as.numeric(as.character(gov.spending.result$year))
-gov.spending.result <- subset(gov.spending.result, year > 2007 & year <= 2016)
+# gov.spending$value <- as.numeric(gov.spending$value)
+# gov.spending[is.na(gov.spending)] <- NA
+# 
+# # CALCULATE GROUP VALUES
+# gov.spending.result <- data.frame(name=character(),
+#                                   value=numeric(),
+#                                   year=numeric())
+# 
+# # COMPUTE SUMS PER GROUP AND... 
+# for (g in 1:length(groups)) {
+#   
+#   gov.temp <- aggregate(value ~ year, subset(gov.spending, un_code %in% groups[[g]]), function(x) sum(x))
+#   
+#   gov.spending.result <- rbind(gov.spending.result, data.frame(name=groups.name[g],
+#                                                                value=gov.temp$value,
+#                                                                year=gov.temp$year))
+# }
+# 
+# # ... CALCULATE GROWTH VALUES FOR THE SUMS
+# gov.spending.result$growth <- with(gov.spending.result, ave(value, name, 
+#                                       FUN=function(x) c(NA, diff(x)/x[-length(x)]) ))
+# 
+# gov.spending.result$year <- as.numeric(as.character(gov.spending.result$year))
+# gov.spending.result <- subset(gov.spending.result, year > 2007 & year <= 2016)
 
 #---------------------------------------------#
 #                                             #
