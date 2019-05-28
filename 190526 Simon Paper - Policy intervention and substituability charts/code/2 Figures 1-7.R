@@ -7,7 +7,7 @@ library("ggplot2")
 
 rm(list=ls())
 
-setwd("/Users/patrickbuess/Dropbox/Collaborations/GTA cloud")
+gta_setwd()
 
 # LOAD ALL DEFINITIONS
 source("4 data queries/190526 Simon Paper - Policy intervention and substituability charts/code/0 Definitions.R")
