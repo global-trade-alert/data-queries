@@ -69,8 +69,8 @@ for (p in 1:length(periods)) {
     harmful.set <- rbind(harmful.set, data.frame(name = groups.name[g],
                                                  i.un=harmful$i.un,
                                                  harmful.percentage = harmful$harmful.percentage,
-                                                 period = paste0("period.",p)
-                                                 )
+                                                 period = paste0("period.",p),
+                                                 stringsAsFactors = F)
                          )
     
     
@@ -101,7 +101,9 @@ for (p in 1:length(periods)) {
     traditional.set <- rbind(traditional.set, data.frame(name = groups.name[g],
                                                          i.un=traditional$i.un,
                                                          traditional.percentage = traditional$traditional.percentage,
-                                                         period = paste0("period.",p)))
+                                                         period = paste0("period.",p),
+                                                         stringsAsFactors = F)
+                             )
     
     # SUBSIDY
     # Let "% subsidy" refer to the total number of red and amber implemented MAST 
@@ -129,21 +131,17 @@ for (p in 1:length(periods)) {
     subsidy.set <- rbind(subsidy.set, data.frame(name = groups.name[g],
                                                  i.un=subsidy$i.un,
                                                  subsidy.percentage = subsidy$subsidy.percentage,
-                                                 period = paste0("period.",p)
-                                                 )
+                                                 period = paste0("period.",p),
+                                                 stringsAsFactors = F)
                          )
     
   }
 }
 
 # COMBINE HARMFUL, TRADITIONAL AND SUBSIDY
-data.percentages = merge(harmful.set[,c("name","harmful.percentage","period","year")],
-                         merge(traditional.set[,c("name","traditional.percentage","period","year")],
-                                subsidy.set[,c("name","subsidy.percentage","period","year")], by=c("name","period","year")), by=c("name","period","year"))
-
-# CONVERT TO CHARACTER
-data.percentages$name <- as.character(data.percentages$name)
-data.percentages$period <- as.character(data.percentages$period)
+data.percentages = merge(harmful.set[,c("name","harmful.percentage","period","i.un")],
+                         merge(traditional.set[,c("name","traditional.percentage","period","i.un")],
+                                subsidy.set[,c("name","subsidy.percentage","period","i.un")], by=c("name","period","i.un")), by=c("name","period","i.un"))
 
 # SAVE FILE
 save(data.percentages, file=paste0(data.path,"percentages.Rdata"))
