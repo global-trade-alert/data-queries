@@ -56,7 +56,7 @@ for (p in 1:length(periods)) {
     harmful$year <- year(harmful$date.implemented)
     
     # AGGREGATE FOR EVALUATION AND YEAR
-    harmful <- aggregate(intervention.id ~ gta.evaluation + year, harmful, function(x) length(unique(x)))
+    harmful <- aggregate(intervention.id ~ gta.evaluation + i.un, harmful, function(x) length(unique(x)))
     harmful <- spread(harmful, gta.evaluation, intervention.id)
     
     harmful[is.na(harmful)] <- 0
@@ -67,29 +67,28 @@ for (p in 1:length(periods)) {
     
     # RBIND SET
     harmful.set <- rbind(harmful.set, data.frame(name = groups.name[g],
+                                                 i.un=harmful$i.un,
                                                  harmful.percentage = harmful$harmful.percentage,
-                                                 period = paste0("period.",p),
-                                                 year = harmful$year))
+                                                 period = paste0("period.",p)
+                                                 )
+                         )
+    
     
     # TRADITIONAL
     # Let "% traditional" refer to the total number of red and amber implemented 
     # tariff increases, MAST chapter D, and MAST subchapters E1, E2, E5, E6, and E9 
     # as a % of all red and amber implemented measures by a jurisdiction.
     
-    gta_data_slicer(gta.evaluation = c("Red","Amber"),
-                    implementation.period = c(periods[[p]][1], periods[[p]][2]),
-                    keep.implementation.na = F,
-                    implementing.country = groups[[g]])
-    traditional <- master.sliced
+    traditional <- subset(master.sliced, i.un %in% groups[[g]])
     
     # SET MAST CHAPTER TO MAST AND OTHER
     traditional$mast.chapter <- as.character(traditional$mast.chapter)
     traditional$mast <- "Other"
     traditional$mast[traditional$mast.chapter %in% c("D","TARIFF") | traditional$mast.id %in% c("E1", "E2", "E5", "E6", "E9")] <- "MAST"
-    traditional$year <- year(traditional$date.implemented)
+    
     
     # AGGREGATE ON BASIS OF MAST CHAPTER AND YEAR
-    traditional <- aggregate(intervention.id ~ mast + year, traditional, function(x) length(unique(x)))
+    traditional <- aggregate(intervention.id ~ mast + i.un, traditional, function(x) length(unique(x)))
     traditional <- spread(traditional, mast, intervention.id)
     
     traditional[is.na(traditional)] <- 0
@@ -100,29 +99,24 @@ for (p in 1:length(periods)) {
     
     # RBIND SET
     traditional.set <- rbind(traditional.set, data.frame(name = groups.name[g],
-                                                 traditional.percentage = traditional$traditional.percentage,
-                                                 period = paste0("period.",p),
-                                                 year = traditional$year))
+                                                         i.un=traditional$i.un,
+                                                         traditional.percentage = traditional$traditional.percentage,
+                                                         period = paste0("period.",p)))
     
     # SUBSIDY
     # Let "% subsidy" refer to the total number of red and amber implemented MAST 
     # chapter L, P7 and P8 measures as a % of all red and amber implemented 
     # measures by a jurisdiction.
-    
-    gta_data_slicer(gta.evaluation = c("Red","Amber"),
-                    implementation.period = c(periods[[p]][1], periods[[p]][2]),
-                    keep.implementation.na = F,
-                    implementing.country = groups[[g]])
-    subsidy <- master.sliced
+     subsidy <-  subset(master.sliced, i.un %in% groups[[g]])
     
     # SET MAST CHAPTER TO MAST AND OTHER
     subsidy$mast.chapter <- as.character(subsidy$mast.chapter)
     subsidy$mast <- "Other"
     subsidy$mast[subsidy$mast.chapter %in% c("L") | subsidy$mast.id %in% c("P7", "P8")] <- "MAST"
-    subsidy$year <- year(subsidy$date.implemented)
+  
     
     # AGGREGATE ON BASIS OF MAST CHAPTER AND YEAR
-    subsidy <- aggregate(intervention.id ~ mast + year, subsidy, function(x) length(unique(x)))
+    subsidy <- aggregate(intervention.id ~ mast + i.un, subsidy, function(x) length(unique(x)))
     subsidy <- spread(subsidy, mast, intervention.id)
     
     subsidy[is.na(subsidy)] <- 0
@@ -133,9 +127,11 @@ for (p in 1:length(periods)) {
     
     # RBIND SET
     subsidy.set <- rbind(subsidy.set, data.frame(name = groups.name[g],
+                                                 i.un=subsidy$i.un,
                                                  subsidy.percentage = subsidy$subsidy.percentage,
-                                                 period = paste0("period.",p),
-                                                 year = subsidy$year))
+                                                 period = paste0("period.",p)
+                                                 )
+                         )
     
   }
 }
