@@ -182,8 +182,8 @@ for (i in 1:length(periods)) {
   
 
 # EXPORT SHARE
-# Let "export share" refer to the exports covered by the new red and amber 
-# measures implemented (of any type) by the jurisdiction during the time period in question.
+# Let "export share" refer to own exports benefitting from the new red and amber 
+# export promotion measures (MAST chapters P7 and P8) implemented by the jurisdiction during the time period in question.
 
 export.share <- data.frame()
 
@@ -193,25 +193,25 @@ for (i in 1:length(periods)) {
     
     c.p=c(max(2009, year(periods[[i]][1])),year(periods[[i]][2]))
     
-    gta_trade_coverage(gta.evaluation = c("Red","Amber"),
-                       affected.flows = "outward",
-                       exporters = groups[[g]],
-                       keep.exporters = T,
-                       group.exporters = T,
-                       implementer.role = "exporter",
-                       coverage.period = c.p,
-                       implementation.period = c(periods[[i]][1], periods[[i]][2]),
-                       intra.year.duration = T) # INTRA YEAR DURATION YES OR NO?
-    
-    trade.coverage.estimates$`Number of interventions affecting exported product` <- NULL
-    trade.coverage.estimates$`Importing country` <- NULL
-    names(trade.coverage.estimates) <- c("name",c.p[1]:c.p[2])
-    trade.coverage.estimates <- gather(trade.coverage.estimates, year, value, 2:ncol(trade.coverage.estimates))
-    
-    export.share <- rbind(export.share, data.frame(name = groups.name[g],
-                                                   share = trade.coverage.estimates$value,
-                                                   period = paste0("period.",i),
-                                                   year = trade.coverage.estimates$year))
+  #   gta_trade_coverage(gta.evaluation = c("Red","Amber"),
+  #                      affected.flows = "outward",
+  #                      exporters = groups[[g]],
+  #                      keep.exporters = T,
+  #                      group.exporters = T,
+  #                      implementer.role = "exporter",
+  #                      coverage.period = c.p,
+  #                      implementation.period = c(periods[[i]][1], periods[[i]][2]),
+  #                      intra.year.duration = T) # INTRA YEAR DURATION YES OR NO?
+  #   
+  #   trade.coverage.estimates$`Number of interventions affecting exported product` <- NULL
+  #   trade.coverage.estimates$`Importing country` <- NULL
+  #   names(trade.coverage.estimates) <- c("name",c.p[1]:c.p[2])
+  #   trade.coverage.estimates <- gather(trade.coverage.estimates, year, value, 2:ncol(trade.coverage.estimates))
+  #   
+  #   export.share <- rbind(export.share, data.frame(name = groups.name[g],
+  #                                                  share = trade.coverage.estimates$value,
+  #                                                  period = paste0("period.",i),
+  #                                                  year = trade.coverage.estimates$year))
   }
 }
 
