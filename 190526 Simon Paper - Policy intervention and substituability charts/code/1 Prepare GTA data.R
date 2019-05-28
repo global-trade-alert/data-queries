@@ -20,20 +20,11 @@ source("4 data queries/190526 Simon Paper - Policy intervention and substituabil
 # FOR EACH PERIOD
 
 # PREPARE SETS
-harmful.set <- data.frame(name = character(),
-                      harmful.percentage = numeric(),
-                      period = character(),
-                      year = numeric())
+harmful.set <- data.frame()
 
-traditional.set <- data.frame(name = character(),
-                      traditional.percentage = numeric(),
-                      period = character(),
-                      year = numeric())
+traditional.set <- data.frame()
 
-subsidy.set <- data.frame(name = character(),
-                      subsidy.percentage = numeric(),
-                      period = character(),
-                      year = numeric())
+subsidy.set <- data.frame()
 
 for (p in 1:length(periods)) {
   
@@ -158,10 +149,7 @@ save(data.percentages, file=paste0(data.path,"percentages.Rdata"))
 # red and amber measures implemented (of any type) by the jurisdiction 
 # during the time period in question.
 
-import.share <- data.frame(name = character(),
-                           share = numeric(),
-                           period = character(),
-                           year = numeric())
+import.share <- data.frame()
 
 for (i in 1:length(periods)) {
   for (g in 1:length(groups)) {
@@ -197,9 +185,7 @@ for (i in 1:length(periods)) {
 # Let "export share" refer to the exports covered by the new red and amber 
 # measures implemented (of any type) by the jurisdiction during the time period in question.
 
-export.share <- data.frame(name = character(),
-                           share = numeric(),
-                           period = character())
+export.share <- data.frame()
 
 for (i in 1:length(periods)) {
   for (g in 1:length(groups)) {
