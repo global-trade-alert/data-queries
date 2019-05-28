@@ -172,7 +172,7 @@ for (i in 1:length(periods)) {
     gta_trade_coverage(gta.evaluation = c("Red","Amber"),
                        importers = groups[[g]],
                        keep.importers = T,
-                       group.importers = T,
+                       group.importers = F,
                        implementer.role = "importer",
                        coverage.period = c.p,
                        implementation.period = c(periods[[i]][1], periods[[i]][2]),
@@ -181,12 +181,14 @@ for (i in 1:length(periods)) {
     trade.coverage.estimates$`Number of interventions affecting exported product` <- NULL
     trade.coverage.estimates$`Exporting country` <- NULL
     names(trade.coverage.estimates) <- c("name",c.p[1]:c.p[2])
-    trade.coverage.estimates <- gather(trade.coverage.estimates, year, value, 2:ncol(trade.coverage.estimates))
+    trade.coverage.estimates$import.share=rowMeans(trade.coverage.estimates[,c(2:ncol(trade.coverage.estimates))])
+    trade.coverage.estimates=merge(trade.coverage.estimates, country.names[,c("name","un_code")],by="name", all.x=T)
     
     import.share <- rbind(import.share, data.frame(name = groups.name[g],
-                                                   share = trade.coverage.estimates$value,
+                                                   i.un=trade.coverage.estimates$un_code,
+                                                   share = trade.coverage.estimates$import.share,
                                                    period = paste0("period.",i),
-                                                   year = trade.coverage.estimates$year))
+                                                   stringsAsFactors = F))
   }
 }
   
