@@ -44,6 +44,11 @@ nextg20 <- nextg20[1:20,c("a.un")]
 groups <- list(all$un_code, g20, nextg20)
 groups.name <- c("all","g20","nextg20")
 
+# ADD NEW GROUPS LIST FOR PLOTS:
+
+plot.groups <- list(all$un_code[! all$un_code %in% g20], g20)
+plot.groups.name <- c("Non-G20","G20")
+
 
 ## initialise MAST choices
 traditional.types=c("E1", "E2", "E5", "E6", "E9",
