@@ -4,6 +4,7 @@ library("tidyverse")
 library("splitstackshape")
 library("lubridate")
 library("ggplot2")
+library(scales)
 
 rm(list=ls())
 
@@ -262,8 +263,8 @@ for (i in 1:length(periods)) {
     plot <- ggplot() +
       geom_point(data=subset(fig6.plot, (period == i)), aes(x=harmful.percentage, y=growth.rate, color=name), size = 1.5) +
       scale_x_continuous()+
-      scale_y_continuous(breaks = seq(-1,3,0.25), limits = c(-1,3), sec.axis = dup_axis()) +
-      labs(x="Harmful interventions as \nshare of all interventions", y="Growth devaluation against US Dollar")+
+      scale_y_continuous(breaks = seq(-1,3,0.25), limits = c(-1,3), sec.axis = dup_axis(), labels=percent) +
+      labs(x="Harmful interventions as \nshare of all interventions", y="Gain of LCU against US Dollar")+
       scale_color_manual(values = gta_colour$qualitative[c(4,1)], labels = c("Non-G20", "G20"))+
       guides(colour = guide_legend(title = "Groups", title.position = "top"))+
       gta_theme()+
