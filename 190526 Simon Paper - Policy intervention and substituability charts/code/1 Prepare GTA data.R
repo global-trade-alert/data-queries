@@ -60,7 +60,7 @@ for (p in 1:length(periods)) {
     harmful.set <- rbind(harmful.set, data.frame(name = groups.name[g],
                                                  i.un=harmful$i.un,
                                                  harmful.percentage = harmful$harmful.percentage,
-                                                 period = paste0("period.",p),
+                                                 period = p,
                                                  stringsAsFactors = F)
     )
     
@@ -92,7 +92,7 @@ for (p in 1:length(periods)) {
     traditional.set <- rbind(traditional.set, data.frame(name = groups.name[g],
                                                          i.un=traditional$i.un,
                                                          traditional.percentage = traditional$traditional.percentage,
-                                                         period = paste0("period.",p),
+                                                         period = p,
                                                          stringsAsFactors = F)
     )
     
@@ -122,7 +122,7 @@ for (p in 1:length(periods)) {
     subsidy.set <- rbind(subsidy.set, data.frame(name = groups.name[g],
                                                  i.un=subsidy$i.un,
                                                  subsidy.percentage = subsidy$subsidy.percentage,
-                                                 period = paste0("period.",p),
+                                                 period = p,
                                                  stringsAsFactors = F)
     )
     
@@ -175,7 +175,7 @@ for (i in 1:length(periods)) {
     import.share <- rbind(import.share, data.frame(name = groups.name[g],
                                                    i.un=trade.coverage.estimates$un_code,
                                                    share = trade.coverage.estimates$import.share,
-                                                   period = paste0("period.",i),
+                                                   period = i,
                                                    stringsAsFactors = F))
   }
 }
@@ -263,5 +263,8 @@ for (i in 1:length(periods)) {
 }
 
 
+
 # SAVE FILE
-save(import.share, export.share, file=paste0(data.path,"shares.Rdata"))
+# save(import.share, export.share, file=paste0(data.path,"shares.Rdata"))
+save(import.share, file=paste0(data.path,"shares.Rdata"))
+
