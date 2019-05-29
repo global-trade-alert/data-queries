@@ -19,6 +19,7 @@ load(paste0(data.path,"worldbankdata.Rdata"))
 load(paste0(data.path,"shares.Rdata"))
 
 
+
 #---------------------------------------------#
 #                                             #
 #   PLOT 1                                    #
@@ -34,6 +35,9 @@ fig1$subsidy.percentage <- NULL
 write.xlsx(fig1, file=paste0(output.path,"Table for figure 1.xlsx"), sheetName = "Fig1", row.names = F)
 
 fig1.plot <- rbind(subset(fig1, ! name %in% c("all","nextg20")), subset(fig1, name == "all" & ! i.un %in% g20))
+
+# CREATE R SQUARED VALUE FILE
+r.squared <- data.frame()
 
 for (i in 1:length(periods)) {
 
@@ -55,9 +59,20 @@ for (i in 1:length(periods)) {
       
       gta_plot_saver(plot = plot,
                      path = output.path,
-                     name=paste0("Figure 1 - Period ",i))
-}
+                     name=paste0("Figure 1 - Period ",i),
+                     eps = F)
 
+      # CALCULATE R SQUARED VALUES
+      lmg20 <- lm(traditional.percentage ~ harmful.percentage, subset(fig1.plot, period == i & name == "g20")) 
+      lmnong20 <- lm(traditional.percentage ~ harmful.percentage, subset(fig1.plot, period == i & name == "all")) 
+      r.squared <- rbind(r.squared, data.frame(period = i,
+                                               g20 = summary(lmg20)$r.squared,
+                                               non.g20 = summary(lmnong20)$r.squared,
+                                               formula = "traditional ~ harmful"))
+      }
+
+# SAVE R SQUARED VALUES
+write.xlsx(r.squared, file = paste0(output.path,"R squared.values.xlsx"), sheetName = "Fig1", row.names = F, append = F)
 
 #---------------------------------------------#
 #                                             #
@@ -74,6 +89,9 @@ fig2$traditional.percentage <- NULL
 write.xlsx(fig2, file=paste0(output.path,"Table for figure 2.xlsx"), sheetName = "Fig2", row.names = F)
 
 fig2.plot <- rbind(subset(fig2, ! name %in% c("all","nextg20")), subset(fig2, name == "all" & ! i.un %in% g20))
+
+# CREATE R SQUARED VALUE FILE
+r.squared <- data.frame()
 
 for (i in 1:length(periods)) {
 
@@ -94,8 +112,20 @@ for (i in 1:length(periods)) {
     
     gta_plot_saver(plot = plot,
                    path = output.path,
-                   name=paste0("Figure 2 - Period ",i))
+                   name=paste0("Figure 2 - Period ",i),
+                   eps = F)
+    
+    # CALCULATE R SQUARED VALUES
+    lmg20 <- lm(subsidy.percentage ~ harmful.percentage, subset(fig2.plot, period == i & name == "g20")) 
+    lmnong20 <- lm(subsidy.percentage ~ harmful.percentage, subset(fig2.plot, period == i & name == "all")) 
+    r.squared <- rbind(r.squared, data.frame(period = i,
+                                             g20 = summary(lmg20)$r.squared,
+                                             non.g20 = summary(lmnong20)$r.squared,
+                                             formula = "subsidy ~ harmful"))
 }
+
+# SAVE R SQUARED VALUES
+write.xlsx(r.squared, file = paste0(output.path,"R squared.values.xlsx"), sheetName = "Fig2", row.names = F, append = T)
 
 
 #---------------------------------------------#
@@ -120,6 +150,9 @@ write.xlsx(fig3, file=paste0(output.path,"Table for figure 3.xlsx"), sheetName =
 
 fig3.plot <- rbind(subset(fig3, ! name %in% c("all","nextg20")), subset(fig3, name == "all" & ! i.un %in% g20))
 
+# CREATE R SQUARED VALUE FILE
+r.squared <- data.frame()
+
 for (i in 1:length(periods)) {
 
   print(paste0("Period: ",i))
@@ -139,8 +172,22 @@ for (i in 1:length(periods)) {
     
     gta_plot_saver(plot = plot,
                    path = output.path,
-                   name=paste0("Figure 3 - Period ",i))
+                   name=paste0("Figure 3 - Period ",i),
+                   eps = F)
+    
+    # CALCULATE R SQUARED VALUES
+    lmg20 <- lm(share ~ harmful.percentage, subset(fig3.plot, period == i & name == "g20")) 
+    lmnong20 <- lm(share ~ harmful.percentage, subset(fig3.plot, period == i & name == "all")) 
+    r.squared <- rbind(r.squared, data.frame(period = i,
+                                             g20 = summary(lmg20)$r.squared,
+                                             non.g20 = summary(lmnong20)$r.squared,
+                                             formula = "import share ~ harmful"))
 }
+
+# SAVE R SQUARED VALUES
+write.xlsx(r.squared, file = paste0(output.path,"R squared.values.xlsx"), sheetName = "Fig3", row.names = F, append = T)
+
+
 
 
 #---------------------------------------------#
@@ -209,6 +256,9 @@ write.xlsx(fig5, file=paste0(output.path,"Table for figure 5.xlsx"), sheetName =
 
 fig5.plot <- rbind(subset(fig5, ! name %in% c("all","nextg20")), subset(fig5, name == "all" & ! i.un %in% g20))
 
+# CREATE R SQUARED VALUE FILE
+r.squared <- data.frame()
+
 for (i in 1:length(periods)) {
 
   print(paste0("Period: ",i))
@@ -229,8 +279,21 @@ for (i in 1:length(periods)) {
     
     gta_plot_saver(plot = plot,
                    path = output.path,
-                   name=paste0("Figure 5 - Period ",i))
+                   name=paste0("Figure 5 - Period ",i),
+                   eps = F)
+    
+    # CALCULATE R SQUARED VALUES
+    lmg20 <- lm(growth.rate ~ harmful.percentage, subset(fig5.plot, period == i & name == "g20")) 
+    lmnong20 <- lm(growth.rate ~ harmful.percentage, subset(fig5.plot, period == i & name == "all")) 
+    r.squared <- rbind(r.squared, data.frame(period = i,
+                                             g20 = summary(lmg20)$r.squared,
+                                             non.g20 = summary(lmnong20)$r.squared,
+                                             formula = "growth of government expenditures ~ harmful"))
 }
+
+# SAVE R SQUARED VALUES
+write.xlsx(r.squared, file = paste0(output.path,"R squared.values.xlsx"), sheetName = "Fig5", row.names = F, append = T)
+
 
 
 #---------------------------------------------#
@@ -255,6 +318,8 @@ write.xlsx(fig6, file=paste0(output.path,"Table for figure 6.xlsx"), sheetName =
 
 fig6.plot <- rbind(subset(fig6, ! name %in% c("all","nextg20")), subset(fig6, name == "all" & ! i.un %in% g20))
 
+# CREATE R SQUARED VALUE FILE
+r.squared <- data.frame()
 
 for (i in 1:length(periods)) {
 
@@ -275,8 +340,21 @@ for (i in 1:length(periods)) {
     
     gta_plot_saver(plot = plot,
                    path = output.path,
-                   name=paste0("Figure 6 - Period ",i))
+                   name=paste0("Figure 6 - Period ",i),
+                   eps = F)
+    
+    # CALCULATE R SQUARED VALUES
+    lmg20 <- lm(growth.rate ~ harmful.percentage, subset(fig6.plot, period == i & name == "g20")) 
+    lmnong20 <- lm(growth.rate ~ harmful.percentage, subset(fig6.plot, period == i & name == "all")) 
+    r.squared <- rbind(r.squared, data.frame(period = i,
+                                             g20 = summary(lmg20)$r.squared,
+                                             non.g20 = summary(lmnong20)$r.squared,
+                                             formula = "growth of devaluation against us dollar ~ harmful"))
 }
+
+# SAVE R SQUARED VALUES
+write.xlsx(r.squared, file = paste0(output.path,"R squared.values.xlsx"), sheetName = "Fig6", row.names = F, append = T)
+
 
 
 #---------------------------------------------#
@@ -302,6 +380,9 @@ write.xlsx(fig7, file=paste0(output.path,"Table for figure 7.xlsx"), sheetName =
 
 fig7.plot <- rbind(subset(fig7, ! name %in% c("all","nextg20")), subset(fig7, name == "all" & ! i.un %in% g20))
 
+# CREATE R SQUARED VALUE FILE
+r.squared <- data.frame()
+
 for (i in 1:length(periods)) {
 
   print(paste0("Period: ",i))
@@ -322,6 +403,19 @@ for (i in 1:length(periods)) {
     
     gta_plot_saver(plot = plot,
                    path = output.path,
-                   name=paste0("Figure 7 - Period ",i))
+                   name=paste0("Figure 7 - Period ",i),
+                   eps = F)
+    
+    # CALCULATE R SQUARED VALUES
+    lmg20 <- lm(growth.rate ~ harmful.percentage, subset(fig7.plot, period == i & name == "g20")) 
+    lmnong20 <- lm(growth.rate ~ harmful.percentage, subset(fig7.plot, period == i & name == "all")) 
+    r.squared <- rbind(r.squared, data.frame(period = i,
+                                             g20 = summary(lmg20)$r.squared,
+                                             non.g20 = summary(lmnong20)$r.squared,
+                                             formula = "growth of unemployment rate ~ harmful"))
 
 }
+
+# SAVE R SQUARED VALUES
+write.xlsx(r.squared, file = paste0(output.path,"R squared.values.xlsx"), sheetName = "Fig7", row.names = F, append = T)
+
