@@ -3,6 +3,7 @@ rm(list=ls())
 library(gtalibrary)
 library(ggplot2)
 library(tidyverse)
+gta_setwd()
 
 gta_colour_palette()
 project = '4 data queries'
@@ -60,13 +61,14 @@ full.panel=
           strip.background.x = element_rect(fill = gta_colour$panel.bg),
           strip.background.y = element_blank(),  
           strip.text.y = element_blank())+
-    scale_y_continuous(limits=c(0,1), 
+    scale_y_continuous(limits=c(0,1),
+                       breaks=seq(0,1,.2),
                        sec.axis = dup_axis())+
     scale_color_manual(values=my.colours, 
                        breaks=c("any","targeted","untargeted"))+ ## 'breaks' specifies which values are displayed in the legend
     scale_size_manual(values=rep(1.2, length(my.colours)), 
                       breaks=c("all impediments","subsidies to\nimport-competing firms","import tariffs"))+
-    labs(y="Share of imports affected",
+    labs(y="Share of exports affected",
          x="", 
          colour="targeted or not\n(top row)", 
          size="instrument used\n(bottom row)")+
@@ -85,6 +87,7 @@ full.panel
 
 gta_plot_saver(plot=full.panel,
                path=output.path,
+               aspect.ratio = 1.3,
                name="Sino-US panel - full panel")
 
 
