@@ -67,8 +67,8 @@ full.panel=
                       breaks=c("All impediments","Subsidies to\nimport-competing firms","Import tariffs"))+
     labs(y="Share of imports affected",
          x="", 
-         colour="targeted or not", 
-         size="instrument used")+
+         colour="targeted or not\n(top row)", 
+         size="instrument used\n(bottom row)")+
     guides(size=guide_legend(order=0, # I can set the order of the legend from left to right
                              title.position = "top",
                              nrow=3,
