@@ -59,7 +59,8 @@ full.panel=
           strip.background.x = element_rect(fill = gta_colour$panel.bg),
           strip.background.y = element_blank(),  
           strip.text.y = element_blank())+
-    scale_y_continuous(limits=c(0,1), sec.axis = dup_axis())+
+    scale_y_continuous(limits=c(0,1), 
+                       sec.axis = dup_axis())+
     scale_color_manual(values=my.colours, 
                        breaks=c("any","targeted","untargeted"))+ ## 'breaks' specifies which values are displayed in the legend
     scale_size_manual(values=rep(1.2, length(my.colours)), 
