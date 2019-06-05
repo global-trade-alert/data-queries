@@ -41,6 +41,7 @@ master$mast[master$mast=="TARIFF"]="Import tariffs"
 ## creating a joint variable is necessary so I can plot it all in a single ggplot command.
 master$plotted.variable=master$target.status
 master$plotted.variable[master$which.panel==2]=master$mast[master$which.panel==2]
+master$plotted.variable=tolower(master$plotted.variable)
 
 my.colours=c(gta_colour$qualitative[c(1,1,2,4,3,7)])
 
