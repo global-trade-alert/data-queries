@@ -72,7 +72,7 @@ full.panel=
                              title.position = "top",
                              nrow=3,
                              override.aes = list(size=1.2,
-                                                 colour=c(my.colours[c(1,4,3)]))), ## allows me to add colours etc as I like
+                                                 colour=c(my.colours[c(1,4,3)]))), ## allows me to change size of the symbol and its colours etc as I like
            color=guide_legend(order=1, 
                               title.position = "top",
                               nrow=3,
