@@ -38,6 +38,7 @@ master$mast[master$mast=="ALL"]="All impediments"
 master$mast[master$mast=="L"]="Subsidies to\nimport-competing firms"
 master$mast[master$mast=="TARIFF"]="Import tariffs"
 
+## creating a joint variable is necessary so I can plot it all in a single ggplot command.
 master$plotted.variable=master$target.status
 master$plotted.variable[master$which.panel==2]=master$mast[master$which.panel==2]
 
@@ -45,7 +46,12 @@ my.colours=c(gta_colour$qualitative[c(1,1,2,4,3,7)])
 
 full.panel=
   ggplot(master, 
-       aes(x=year, y=value, group=plotted.variable, colour=plotted.variable, size=plotted.variable))+
+       aes(x=year, 
+           y=value, 
+           group=plotted.variable, 
+           colour=plotted.variable, 
+           size=plotted.variable)
+       )+
     geom_line()+
     facet_grid(which.panel ~ importer)+
     gta_theme(x.bottom.angle =90)+
@@ -55,22 +61,23 @@ full.panel=
           strip.text.y = element_blank())+
     scale_y_continuous(limits=c(0,1), sec.axis = dup_axis())+
     scale_color_manual(values=my.colours, 
-                       breaks=c("any","targeted","untargeted"))+
+                       breaks=c("any","targeted","untargeted"))+ ## 'breaks' specifies which values are displayed in the legend
     scale_size_manual(values=rep(1.2, length(my.colours)), 
                       breaks=c("All impediments","Subsidies to\nimport-competing firms","Import tariffs"))+
     labs(y="Share of imports affected",
          x="", 
          colour="targeted or not", 
          size="instrument used")+
-    guides(color=guide_legend(order=1,
-                              title.position = "top",
-                              nrow=3,
-                              override.aes = list(size=1.2)),
-           size=guide_legend(order=0,
+    guides(size=guide_legend(order=0, # I can set the order of the legend from left to right
                              title.position = "top",
                              nrow=3,
                              override.aes = list(size=1.2,
-                                                 colour=c(my.colours[c(1,4,3)]))))
+                                                 colour=c(my.colours[c(1,4,3)]))), ## allows me to add colours etc as I like
+           color=guide_legend(order=1, 
+                              title.position = "top",
+                              nrow=3,
+                              override.aes = list(size=1.2))
+           )
 
 full.panel
 
