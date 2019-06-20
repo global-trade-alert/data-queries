@@ -1,0 +1,118 @@
+library("gtalibrary")
+library("xlsx")
+library("tidyverse")
+library("WDI")
+
+rm(list=ls())
+
+gta_setwd()
+
+source("4 data queries/190617 Top10 Swiss export markets/code/0 Definitions.R")
+
+
+# GET TOP MARKETS AND SECTORS
+load(paste0(data.path,"Top CPC and markets.Rdata"))
+top.cpc <- top.cpc$cpc
+top.markets <- top.markets$un_code
+
+
+# TABLE 2
+# The second calculations relate only to the top 10 foreign markets for Swiss 
+# exports (excluding gold again.) Please calculate the % change in the value 
+# of the Swiss franc against the local currency of each top 10 foreign market 
+# between 2010 and 2017. Please also calculate for each top 10 foreign market 
+# the % change in their real government consumption expenditure between 2010 and 2017.
+
+# EXCHANGE RATE
+
+year.start = 2010
+year.end = 2017
+
+xchange <- WDI(indicator="DPANUSSPB", start=year.start, end=year.end, extra=T)
+ch.xchange <- c(subset(xchange, xchange$iso3c=="CHE" & xchange$year==year.start)$DPANUSSPB,
+                subset(xchange, xchange$iso3c=="CHE" & xchange$year==year.end)$DPANUSSPB) # SAVE SWISS RATES
+
+xchange=subset(xchange, is.na(DPANUSSPB)==F & year %in% c(year.start,year.end) & iso3c %in% countries$iso_code[countries$un_code %in% top.markets])[,c("iso3c","DPANUSSPB","year")]
+xchange$ch <- ch.xchange[1]
+xchange$ch[xchange$year==year.end] <- ch.xchange[2]
+xchange$ratio <- xchange$DPANUSSPB/xchange$ch # CALCULATE SWISS EXCHANGE RATE AGAINST LCU
+xchange[,c("DPANUSSPB","ch")] <- NULL
+xchange <- spread(xchange, year, ratio)
+xchange$growth.xchange.rate = ((xchange$`2017`/xchange$`2010`)-1)*100 # CALCULATE GROWTH
+
+# GOV SPENDING
+realgov <- WDI(indicator="NE.CON.GOVT.KN", start=year.start, end=year.end, extra=T)
+realgov <- subset(realgov, is.na(NE.CON.GOVT.KN)==F & year %in% c(year.start,year.end) & iso3c %in% countries$iso_code[countries$un_code %in% top.markets])[,c("iso3c","NE.CON.GOVT.KN","year")]
+realgov <- spread(realgov, year, NE.CON.GOVT.KN)
+realgov$growth.gov.spending <- ((realgov$`2017`/realgov$`2010`)-1)*100 # CALCULATE GROWTH
+
+# COMBINE BOTH SETS
+table2 <- merge(xchange[c("iso3c","growth.xchange.rate")], realgov[,c("iso3c","growth.gov.spending")], by="iso3c")
+table2 <- merge(table2, countries[c("name","iso_code")], by.x="iso3c", by.y="iso_code")
+table2 <- table2[,c("name","growth.xchange.rate","growth.gov.spending")]
+names(table2) <- c("Country","Growth of exchange rate CHF against LCU","Growth of government spending")
+
+write.xlsx(table2, file=paste0(output.path,"Table 2 - Growth of exchange rate and government spending - Top ",range," export markets of ",countries$name[countries$un_code==country],".xlsx"), row.names = F, sheetName = "% Growth")
+
+
+# TABLE 3 (AND 4)
+# The third calculation relates to Swiss exports to the USA. Please calculate 
+# using 2017 trade data the % and total value of Swiss exports going to the USA 
+# that are in products that the Americans raised tariffs on Chinese imports during 
+# 2018. I want to learn how much potential overlap there is between Swiss exports 
+# and the Chinese exports hit by new American tariffs in 2018.
+
+# The fourth calculation relates to Swiss exports to China.  Please calculate 
+# using 2017 trade data the % and total value of Swiss exports going to China 
+# that are in products that the Chinese raised tariffs on US imports during 2018. 
+# I want to learn how much potential overlap there is between Swiss exports and the 
+# US exports hit by new Chinese tariffs in 2018.
+
+# WHAT PRODUCTS DID USA RAISE TARIFFS AGAINST CHINA IN 2018 AND VICE VERSA
+
+us.china <- c(840,156)
+china.us <- c(156,840)
+
+table3 <- data.frame()
+
+for (h in 1:2) {
+  
+  gta_data_slicer(gta.evaluation = c("Red","Amber"),
+                  implementing.country = us.china[h],
+                  keep.implementer = T,
+                  affected.country = china.us[h],
+                  keep.affected = T,
+                  mast.chapters = "TARIFF",
+                  keep.mast = T,
+                  implementation.period = c("2018-01-01","2018-12-31"),
+                  keep.implementation.na = F)
+  
+  products <- unique(cSplit(master.sliced, which(colnames(master.sliced)=="affected.product"), direction="long", sep=",")$affected.product)
+  
+  
+  # WHAT SHARE / VALUE OF SWISS EXPORTS IN THESE PRODUCTS TO US OR CHINA IS AFFECTED 
+  for (i in c("share","value")){
+    gta_trade_coverage(gta.evaluation = c("Red","Amber"),
+                       coverage.period = c(2018,2018),
+                       exporters = country,
+                       keep.exporters = T,
+                       importers = us.china[h],
+                       keep.importers = T,
+                       hs.codes = products,
+                       keep.hs = T,
+                       trade.data = 2017,
+                       trade.statistic = i)
+    
+    table3 <- rbind(table3, data.frame(exporter = countries$name[countries$un_code==country],
+                                       importer = countries$name[countries$un_code==us.china[h]],
+                                       value = i,
+                                       type = paste0("Share affected by interventions from ",countries$name[countries$un_code==us.china[h]]),
+                                       affected = trade.coverage.estimates[1,ncol(trade.coverage.estimates)])
+    )
+    
+  }
+  
+}
+
+write.xlsx(table3, file=paste0(output.path,"Table 3 - ",countries$name[countries$un_code==country]," exports to ",countries$name[countries$un_code==us.china[h]]," or ",countries$name[countries$un_code==china.us[h]]," - overlap between export hits.xlsx"),sheetName = "Coverages", row.names=F)
+
