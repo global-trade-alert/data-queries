@@ -54,8 +54,6 @@ for (i in top.cpc) {
                     implementation.period = c("2008-01-01","2010-12-31"),
                     revocation.period = c("2011-01-01","2100-01-01"),
                     keep.revocation.na = T,
-                    mast.chapters = gold,
-                    keep.mast = F,
                     implementer.role = "Importer")
   
   if (exists("trade.coverage.estimates")) {
@@ -89,8 +87,6 @@ for (i in top.cpc) {
                      keep.cpc = T,
                      intervention.types = "Export subsidy",
                      keep.type = T,
-                     mast.chapters = gold,
-                     keep.mast = F,
                      implementer.role = "3rd country")
   
   if (exists("trade.coverage.estimates")) {
@@ -124,8 +120,6 @@ for (i in top.cpc) {
                      keep.revocation.na = T,
                      cpc.sectors = i,
                      keep.cpc = T,
-                     mast.chapters = gold,
-                     keep.mast = F,
                      implementer.role = "Importer")
 
   if (exists("trade.coverage.estimates")) {
@@ -159,8 +153,6 @@ for (i in top.cpc) {
                      keep.cpc = T,
                      intervention.types = "Export subsidy",
                      keep.type = T,
-                     mast.chapters = gold,
-                     keep.mast = F,
                      implementer.role = "3rd country")
   
   if (exists("trade.coverage.estimates")) {
@@ -188,8 +180,6 @@ for (i in top.cpc) {
                             keep.importer = T,
                             cpc.sectors = i,
                             keep.cpc = T,
-                            hs.codes = gold,
-                            keep.hs = F,
                             trade.data = 2010)
   
   trade.data.2010 = aggregate(trade.value ~ i.un, trade.base.bilateral, sum)
@@ -201,8 +191,6 @@ for (i in top.cpc) {
                             keep.importer = T,
                             cpc.sectors = i,
                             keep.cpc = T,
-                            hs.codes = gold,
-                            keep.hs = F,
                             trade.data = 2017)
   
   trade.data <- merge(trade.data.2010, aggregate(trade.value ~ i.un, trade.base.bilateral, sum), by="i.un")
@@ -218,7 +206,9 @@ results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
 
 
 # SAVE RESULTS
-save(results, file=paste(data.path, "results matrix.Rdata"))
+save(results, file=paste0(data.path, "results matrix.Rdata"))
+load(paste0(data.path,"results matrix.Rdata"))
+
 
 # The idea here is as follows: I want to relate the change/growth in exports to the 
 # changes in the exposure to import distortions and to third party export incentives).
