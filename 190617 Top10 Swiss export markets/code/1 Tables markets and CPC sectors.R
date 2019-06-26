@@ -128,27 +128,18 @@ for (h in 1:2) {
   
   
   # WHAT SHARE / VALUE OF SWISS EXPORTS IN THESE PRODUCTS TO US OR CHINA IS AFFECTED 
-  for (i in c("share","value")){
-    gta_trade_coverage(gta.evaluation = c("Red","Amber"),
-                       coverage.period = c(2018,2018),
-                       exporters = country,
-                       keep.exporters = T,
-                       importers = us.china[h],
-                       keep.importers = T,
-                       hs.codes = products,
-                       keep.hs = T,
-                       trade.data = 2017,
-                       trade.statistic = i)
-    
-    table3 <- rbind(table3, data.frame(exporter = countries$name[countries$un_code==country],
-                                       importer = countries$name[countries$un_code==us.china[h]],
-                                       value = i,
-                                       type = paste0("Share affected by interventions from ",countries$name[countries$un_code==us.china[h]]),
-                                       affected = trade.coverage.estimates[1,ncol(trade.coverage.estimates)])
-    )
-    
-  }
+  gta_trade_value_bilateral(importing.country = us.china[h],
+                            keep.importer = T,
+                            exporting.country = 756,
+                            keep.exporter = T,
+                            hs.codes=gold,
+                            keep.hs=F,
+                            trade.data=2017)
   
+  trade.base.bilateral$is.affected=trade.base.bilateral$hs6 %in% products
+  
+  ## that's your number
+  sum(subset(trade.base.bilateral, is.affected)$trade.value)/sum(trade.base.bilateral$trade.value)
 }
 
 write.xlsx(table3, file=paste0(output.path,"Table 3 - ",countries$name[countries$un_code==country]," exports to ",countries$name[countries$un_code==us.china[h]]," or ",countries$name[countries$un_code==china.us[h]]," - overlap between export hits.xlsx"),sheetName = "Coverages", row.names=F)
