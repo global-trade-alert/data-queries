@@ -2,6 +2,7 @@ library("gtalibrary")
 library("xlsx")
 library("tidyverse")
 library("WDI")
+library("IMFData")
 
 rm(list=ls())
 
@@ -28,17 +29,53 @@ top.markets <- top.markets$un_code
 year.start = 2010
 year.end = 2017
 
-xchange <- WDI(indicator="DPANUSSPB", start=year.start, end=year.end, extra=T)
-ch.xchange <- c(subset(xchange, xchange$iso3c=="CHE" & xchange$year==year.start)$DPANUSSPB,
-                subset(xchange, xchange$iso3c=="CHE" & xchange$year==year.end)$DPANUSSPB) # SAVE SWISS RATES
+# IMF currency values
 
-xchange=subset(xchange, is.na(DPANUSSPB)==F & year %in% c(year.start,year.end) & iso3c %in% countries$iso_code[countries$un_code %in% top.markets])[,c("iso3c","DPANUSSPB","year")]
-xchange$ch <- ch.xchange[1]
-xchange$ch[xchange$year==year.end] <- ch.xchange[2]
-xchange$ratio <- xchange$DPANUSSPB/xchange$ch # CALCULATE SWISS EXCHANGE RATE AGAINST LCU
-xchange[,c("DPANUSSPB","ch")] <- NULL
-xchange <- spread(xchange, year, ratio)
-xchange$growth.xchange.rate = ((xchange$`2017`/xchange$`2010`)-1)*100 # CALCULATE GROWTH
+### Add your currencies here
+imf.cur=data.frame(currency=c("GBP", "PLN", "EUR", "SEK", "DKK", "HUF", "BGN", "CZK", "NOK", "CHF", "HRK", "USD", "RON", "SKK", "MKD", "ISK", "JPY", "LTL", "LVL", "MTL"),
+                   imf.symbol=c("GB", "PL", "U2", "SE", "DK", "HU", "BG","CZ", "NO", "CH", "HR", "US", "RO", "SK","MK", "IS","JP", "LT", "LV", "MT"),
+                   stringsAsFactors = F)
+
+databaseID <- 'IFS'
+startdate='2010-01-01'
+enddate='2017-12-31'
+checkquery = FALSE
+
+
+queryfilter <- list(CL_FREQ='A', 
+                    CL_AREA_IFS=c("GB", "PL", "U2", "SE", "DK", "HU", "BG","CZ", "NO", "CH", "HR", "US", "RO", "SK","MK", "IS","JP", "LT", "LV", "MT"), 
+                    CL_INDICATOR_IFS =c('ENDA_XDC_USD_RATE'))
+ex.rate <- CompactDataMethod(databaseID, queryfilter, startdate, enddate, checkquery, tidy = T)
+
+ex.rate=ex.rate[,c(1,2,4)]
+names(ex.rate)=c("year","lcu.per.usd", "imf.symbol")
+ex.rate=merge(ex.rate, imf.cur, by="imf.symbol",all.x=T)
+ex.rate$imf.symbol=NULL
+ex.rate=subset(ex.rate, year %in% c(2010, 2017))
+ex.rate$lcu.per.usd=as.numeric(ex.rate$lcu.per.usd)
+
+chf.2010=ex.rate$lcu.per.usd[ex.rate$currency=="CHF" & ex.rate$year==2010]
+chf.2017=ex.rate$lcu.per.usd[ex.rate$currency=="CHF" & ex.rate$year==2017]
+
+ex.rate=reshape(ex.rate, idvar="currency",timevar="year", direction="wide")
+names(ex.rate)=gsub("usd","chf",names(ex.rate))
+
+ex.rate$lcu.per.chf.2010=ex.rate$lcu.per.chf.2010/chf.2010
+ex.rate$lcu.per.chf.2017=ex.rate$lcu.per.chf.2017/chf.2017
+ex.rate$chf.appreciation=ex.rate$lcu.per.chf.2017/ex.rate$lcu.per.chf.2010-1 ## see EUR: CHF appreciated 24% against EUR 2010->2017
+
+# 
+# xchange <- WDI(indicator="DPANUSSPB", start=year.start, end=year.end, extra=T)
+# ch.xchange <- c(subset(xchange, xchange$iso3c=="CHE" & xchange$year==year.start)$DPANUSSPB,
+#                 subset(xchange, xchange$iso3c=="CHE" & xchange$year==year.end)$DPANUSSPB) # SAVE SWISS RATES
+# 
+# xchange=subset(xchange, is.na(DPANUSSPB)==F & year %in% c(year.start,year.end) & iso3c %in% countries$iso_code[countries$un_code %in% top.markets])[,c("iso3c","DPANUSSPB","year")]
+# xchange$ch <- ch.xchange[1]
+# xchange$ch[xchange$year==year.end] <- ch.xchange[2]
+# xchange$ratio <- xchange$DPANUSSPB/xchange$ch # CALCULATE SWISS EXCHANGE RATE AGAINST LCU
+# xchange[,c("DPANUSSPB","ch")] <- NULL
+# xchange <- spread(xchange, year, ratio)
+# xchange$growth.xchange.rate = ((xchange$`2017`/xchange$`2010`)-1)*100 # CALCULATE GROWTH
 
 # GOV SPENDING
 realgov <- WDI(indicator="NE.CON.GOVT.KN", start=year.start, end=year.end, extra=T)
