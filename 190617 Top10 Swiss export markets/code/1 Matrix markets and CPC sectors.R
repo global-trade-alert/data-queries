@@ -146,7 +146,7 @@ for (i in top.cpc) {
 }
 
 results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
-
+results[is.na(results)]=0
 
 # SAVE RESULTS
 save(results, file=paste0(data.path, "results matrix.Rdata"))
