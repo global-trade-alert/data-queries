@@ -105,11 +105,10 @@ for (i in top.cpc) {
 }
 
 results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
-
+results[is.na(results)]=0
 
 
 # 5. The ratio of Swiss exports in 2017 to 2010.
-
 results.temp <- data.frame()
 
 for (i in top.cpc) {
@@ -146,8 +145,7 @@ for (i in top.cpc) {
 }
 
 results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
-results[is.na(results)]=0
-
+results[is.na(results)]="not exported"
 # SAVE RESULTS
 save(results, file=paste0(data.path, "results matrix.Rdata"))
 load(paste0(data.path,"results matrix.Rdata"))
@@ -170,5 +168,5 @@ for (t in 3:(length(colnms)+2)){
   results.temp = spread(results.temp, name, 3)
   # result.xlsx <- results.temp[,-1]
   # rownames(result.xlsx) <- results.temp[,1]
-  write.xlsx(results.temp, file=paste0(output.path,"Matrix CPC and export markets of ", countries$name[countries$un_code==country]," - ",gsub("\\.", " ",colnms[t-2]),".xlsx"), append = F, sheetName = "Matrix")
+  xlsx::write.xlsx(results.temp, file=paste0(output.path,"Matrix CPC and export markets of ", countries$name[countries$un_code==country],".xlsx"), append = T, sheetName = gsub("\\.", " ",colnms[t-2]), row.names=F)
 }
