@@ -51,9 +51,6 @@ for (i in top.cpc) {
                     group.importers = F,
                     cpc.sectors = i,
                     keep.cpc = T,
-                    implementation.period = c("2008-01-01","2010-12-31"),
-                    revocation.period = c("2011-01-01","2100-01-01"),
-                    keep.revocation.na = T,
                     implementer.role = "Importer")
   
   if (exists("trade.coverage.estimates")) {
