@@ -67,6 +67,7 @@ results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
 # implemented by a third country that affects the importing country in question.
 
 results.temp <- data.frame()
+export.subsidies=int.mast.types$intervention.type[int.mast.types$mast.subchapter.id=="P7"]
 
 for (i in top.cpc) {
   print(paste0("--- ",counter, " / ", range*nr.of.tables," ---"))
@@ -82,7 +83,7 @@ for (i in top.cpc) {
                      group.importers = F,
                      cpc.sectors = i,
                      keep.cpc = T,
-                     intervention.types = "Export subsidy",
+                     intervention.types = export.subsidies,
                      keep.type = T,
                      implementer.role = "3rd country")
   
