@@ -33,8 +33,11 @@ results$country <- NULL
 # in terms of a matrix, with the foreign markets along one dimension and the sectors 
 # along another dimension. The matrix will have 100 cells. Please calculate for each cell:
 #   
+
 # 1. The % of Swiss exports that face a trade distortion (red/amber implemented) 
 # in force in 2010 implemented by the importing country.
+# 3. The % of Swiss exports that face a trade distortion in force in 2017 implemented 
+# by the importing country.
 
 results.temp <- data.frame()
   
@@ -43,7 +46,7 @@ for (i in top.cpc) {
   counter = counter + 1
   
   gta_trade_coverage(gta.evaluation = c("Red","Amber"),
-                    coverage.period = c(2010,2010),
+                    coverage.period = c(2010,2017),
                     exporters = country,
                     keep.exporters = T,
                     importers = top.markets,
@@ -56,7 +59,9 @@ for (i in top.cpc) {
   if (exists("trade.coverage.estimates")) {
     results.temp <- rbind(results.temp, data.frame(cpc = i,
                                          name = trade.coverage.estimates[,c("Importing country")],
-                                         distortions.2010 = trade.coverage.estimates[,ncol(trade.coverage.estimates)]))
+                                         distortions.2010 = trade.coverage.estimates[,which(grepl("2010", names(trade.coverage.estimates)))],
+                                         distortions.2017 = trade.coverage.estimates[,which(grepl("2017", names(trade.coverage.estimates)))],
+                                         stringsAsFactors = F))
     rm(trade.coverage.estimates)
   }
 }
@@ -64,6 +69,8 @@ for (i in top.cpc) {
 results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
 
 # 2. The % of Swiss exports that compete against an export incentive (P7) in 2010 
+# implemented by a third country that affects the importing country in question.
+# 4. The % of Swiss exports that compete against an export incentive (P7) in 2017 
 # implemented by a third country that affects the importing country in question.
 
 results.temp <- data.frame()
@@ -75,7 +82,7 @@ for (i in top.cpc) {
   
   gta_trade_coverage(gta.evaluation = c("Red","Amber"),
                      affected.flows = "outward subsidy",
-                     coverage.period = c(2010,2010),
+                     coverage.period = c(2010,2017),
                      exporters = country,
                      keep.exporters = T,
                      importers = top.markets,
@@ -90,78 +97,16 @@ for (i in top.cpc) {
   if (exists("trade.coverage.estimates")) {
     results.temp <- rbind(results.temp, data.frame(cpc = i,
                                                    name = trade.coverage.estimates[,c("Importing country")],
-                                                   export.incentives.2010 = trade.coverage.estimates[,ncol(trade.coverage.estimates)]))    
+                                                   export.incentives.2010 = trade.coverage.estimates[,which(grepl("2010", names(trade.coverage.estimates)))],
+                                                   export.incentives.2017 = trade.coverage.estimates[,which(grepl("2017", names(trade.coverage.estimates)))],
+                                                   stringsAsFactors = F))    
     rm(trade.coverage.estimates)
   }
 }
 
 results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
 
-# 3. The % of Swiss exports that face a trade distortion in force in 2017 implemented 
-# by the importing country.
 
-results.temp <- data.frame()
-
-for (i in top.cpc) {
-  print(paste0("--- ",counter, " / ", range*nr.of.tables," ---"))
-  counter = counter + 1
-  
-  gta_trade_coverage(gta.evaluation = c("Red","Amber"),
-                     coverage.period = c(2017,2017),
-                     exporters = country,
-                     keep.exporters = T,
-                     importers = top.markets,
-                     keep.importers = T,
-                     group.importers = F,
-                     implementation.period = c("2008-01-01","2017-12-31"),
-                     revocation.period = c("2018-01-01","2100-01-01"),
-                     keep.revocation.na = T,
-                     cpc.sectors = i,
-                     keep.cpc = T,
-                     implementer.role = "Importer")
-
-  if (exists("trade.coverage.estimates")) {
-    results.temp <- rbind(results.temp, data.frame(cpc = i,
-                                                   name = trade.coverage.estimates[,c("Importing country")],
-                                                   distortions.2017 = trade.coverage.estimates[,ncol(trade.coverage.estimates)])) 
-    rm(trade.coverage.estimates)
-  } 
-}
-
-results <- merge(results, results.temp, by=c("cpc","name"),all.x = T)
-
-# 4. The % of Swiss exports that compete against an export incentive (P7) in 2017 
-# implemented by a third country that affects the importing country in question.
-
-results.temp <- data.frame()
-
-for (i in top.cpc) {
-  print(paste0("--- ",counter, " / ", range*nr.of.tables," ---"))
-  counter = counter + 1
-  
-  gta_trade_coverage(gta.evaluation = c("Red","Amber"),
-                     affected.flows = "outward subsidy",
-                     coverage.period = c(2017,2017),
-                     exporters = country,
-                     keep.exporters = T,
-                     importers = top.markets,
-                     keep.importers = T,
-                     group.importers = F,
-                     cpc.sectors = i,
-                     keep.cpc = T,
-                     intervention.types = "Export subsidy",
-                     keep.type = T,
-                     implementer.role = "3rd country")
-  
-  if (exists("trade.coverage.estimates")) {
-    results.temp <- rbind(results.temp, data.frame(cpc = i,
-                                                   name = trade.coverage.estimates[,c("Importing country")],
-                                                   export.incentives.2017 = trade.coverage.estimates[,ncol(trade.coverage.estimates)]))
-    rm(trade.coverage.estimates)
-  }
-}
-
-results <- merge(results, results.temp, by=c("cpc","name"), all.x = T)
 
 # 5. The ratio of Swiss exports in 2017 to 2010.
 
