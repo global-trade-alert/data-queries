@@ -16,12 +16,13 @@ gta_colour_palette()
 # 1. For??the last 3 years of available trade data can you please identify 
 # the share of Swiss exports that are capital goods (that is, goods 
 # purchased by firms as part of their investments/CAPEX).
-
-cap.goods <- read.csv(file=paste0(data.path,"UNCTAD HS07 product groups.csv"),sep=";") # HS CODE 07, must be converted to HS12
-cap.goods <- subset(cap.goods, type == "Capital goods")$hs07
-
-# CONVERT HS07 TO HS12
-cap.goods <- gta_hs_vintage_converter(codes = cap.goods, origin = "2007")
+# 
+# cap.goods <- read.csv(file=paste0(data.path,"UNCTAD HS07 product groups.csv"),sep=";") # HS CODE 07, must be converted to HS12
+# cap.goods <- subset(cap.goods, type == "Capital goods")$hs07
+# 
+# # CONVERT HS07 TO HS12
+# cap.goods <- gta_hs_vintage_converter(codes = cap.goods, origin = "2007")
+cap.goods=hs.codes$hs.code[hs.codes$is.capital.good]
 
 # GET SWISS TRADE VALUES AND CALCULATE SHARES OF CAPITAL GOODS EXPORTS
 trade.swiss <- data.frame()
