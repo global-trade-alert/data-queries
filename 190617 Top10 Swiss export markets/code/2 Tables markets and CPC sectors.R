@@ -87,7 +87,8 @@ realgov <- spread(realgov, year, NE.CON.GOVT.CN)
 
 # ADD INFLATION 2010-2017 TO CALCULCATE REAL VALUES OF 2017
 cpi.index <- read.csv(paste0(data.path,"consumer price index.csv"))
-cpi.index <- subset(cpi.index, TIME %in% c(year.start,year.end) & X...LOCATION %in% countries$iso_code[countries$un_code %in% top.markets])[,c("X...LOCATION","Value","TIME")]
+names(cpi.index)=c("LOCATION", "INDICATOR","SUBJECT","MEASURE","FREQUENCY","TIME","Value" , "Flag.Codes")
+cpi.index <- subset(cpi.index, TIME %in% c(year.start,year.end) & LOCATION %in% countries$iso_code[countries$un_code %in% top.markets])[,c("LOCATION","Value","TIME")]
 cpi.index <- spread(cpi.index, TIME, Value)
 cpi.index$inflation <- cpi.index$`2017`/cpi.index$`2010`
 realgov <- merge(realgov,cpi.index[,c("X...LOCATION","inflation")], by.x="iso3c",by.y="X...LOCATION")
