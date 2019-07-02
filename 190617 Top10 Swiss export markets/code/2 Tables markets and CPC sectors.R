@@ -91,7 +91,7 @@ names(cpi.index)=c("LOCATION", "INDICATOR","SUBJECT","MEASURE","FREQUENCY","TIME
 cpi.index <- subset(cpi.index, TIME %in% c(year.start,year.end) & LOCATION %in% countries$iso_code[countries$un_code %in% top.markets])[,c("LOCATION","Value","TIME")]
 cpi.index <- spread(cpi.index, TIME, Value)
 cpi.index$inflation <- cpi.index$`2017`/cpi.index$`2010`
-realgov <- merge(realgov,cpi.index[,c("X...LOCATION","inflation")], by.x="iso3c",by.y="X...LOCATION")
+realgov <- merge(realgov,cpi.index[,c("LOCATION","inflation")], by.x="iso3c",by.y="LOCATION")
 realgov$`2017` <- realgov$`2017`/realgov$inflation
 
 realgov$growth.gov.spending <- ((realgov$`2017`/realgov$`2010`)-1)*100 # CALCULATE GROWTH
