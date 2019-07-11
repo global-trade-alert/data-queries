@@ -27,8 +27,8 @@ importing.base=merge(expand.grid(i.un=cty,hs6=overview$hs.2012),importing.base,b
 importing.base$trade.value[is.na(importing.base$trade.value)]=0
 
 exporting.base=subset(exporting.base,a.un %in% cty)
-exporting.base=aggregate(trade.value~a.un+hs6,exporting.base,sum)
-exporting.base=merge(expand.grid(a.un=cty,hs6=overview$hs.2012),exporting.base,by=c('hs6','a.un'),all.x = T)
+exporting.base=aggregate(trade.value~a.un+hs6+year,exporting.base,sum)
+exporting.base=merge(expand.grid(a.un=cty,hs6=overview$hs.2012,year=2015:2017),exporting.base,by=c('hs6','a.un','year'),all.x = T)
 exporting.base$trade.value[is.na(exporting.base$trade.value)]=0
 
 # importer stats ----------------------------------------------------------
@@ -73,18 +73,10 @@ setnames(overview,names(overview)[!names(overview)%in%original.colnames],
                                     'Number of non-zero value imported importers'))
 # export stats ------------------------------------------------------------
 
-#max through all countries
-temp=merge(aggregate(trade.value~hs6,exporting.base,max),exporting.base,by=c('trade.value','hs6'))
-setnames(temp,names(temp),c('exporter.max.value','hs.2012','exporter.max.name'))
-overview=merge(overview,temp,by='hs.2012',all.x=T)
-overview$exporter.max.name=plyr::mapvalues(overview$exporter.max.name,country.names$un_code,as.character(country.names$name))
-overview=overview[!duplicated(overview$hs.2012),]
-
-setnames(overview,c('exporter.max.value','exporter.max.name'),c('Maximum value exported by single country','Largest exporter'))
-#max per country
-exporting.base$a.un=plyr::mapvalues(exporting.base$a.un,country.names$un_code,paste(as.character(country.names$name),'value exported'))
+#max per country in single year
+exporting.base$a.un=plyr::mapvalues(exporting.base$a.un,country.names$un_code,paste(as.character(country.names$name),'max value exported in single year'))
+exporting.base=aggregate(trade.value~a.un+hs6,exporting.base,max)
 overview=merge(overview,spread(exporting.base,a.un,trade.value),by.x='hs.2012',by.y='hs6')
-
 
 # save --------------------------------------------------------------------
 setnames(overview,original.colnames,c('hs 2012','APEC','ICTSD','WTO','official description','APEC description','ICTSD description','WTO description'))
