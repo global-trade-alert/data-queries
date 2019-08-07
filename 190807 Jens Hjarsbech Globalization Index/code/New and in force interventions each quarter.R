@@ -24,8 +24,7 @@ data.path='4 data queries/190807 Jens Hjarsbech Globalization Index/data/'
 # with internal data ------------------------------------------------------
 new.ids=unique(subset(master.sliced,!is.na(date.implemented) & date.implemented<=Sys.Date(),select=c('date.implemented','intervention.id')))
 new.ids$qtr.impl=as.yearqtr(as.Date(new.ids$date.implemented,"%Y-%m-%d"))
-new.ids$count=1
-new.ids=aggregate(count~qtr.impl,new.ids,sum)
+new.ids=aggregate(intervention.id~qtr.impl,new.ids,function(x) length(unique(x)))
 
 in.force.ids=unique(subset(master.sliced,!is.na(date.implemented),select=c('date.implemented','date.removed','intervention.id')))
 in.force.ids$qtr.impl=as.yearqtr(as.Date(in.force.ids$date.implemented,"%Y-%m-%d"))
