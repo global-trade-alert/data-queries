@@ -15,6 +15,7 @@ new.ids=unique(subset(master.sliced,!is.na(date.implemented),select=c('date.impl
 new.ids$qtr.impl=as.yearqtr(as.Date(new.ids$date.implemented,"%Y-%m-%d"))
 new.ids$count=1
 new.ids=aggregate(count~qtr.impl,new.ids,sum)
+new.ids=new.ids[which(new.ids$qtr.impl<=as.yearqtr(Sys.Date())),]
 
 in.force.ids=unique(subset(master.sliced,!is.na(date.implemented),select=c('date.implemented','date.removed','intervention.id')))
 in.force.ids$qtr.impl=as.yearqtr(as.Date(in.force.ids$date.implemented,"%Y-%m-%d"))
@@ -30,10 +31,10 @@ for (qtr in paste0(rep(seq(2008,2019,1),each=4),' Q',1:4)){
 
 }
 
-in.force.ids=subset(in.force.ids,select=!names(in.force.ids) %in% c('qtr.impl','qtr.rem'))
+in.force.ids=subset(in.force.ids,select=!(names(in.force.ids) %in% c('qtr.impl','qtr.rem')))
 in.force.ids=data.frame(quarter=names(in.force.ids),
                         in.force.interventions=colSums(in.force.ids))
-in.force.ids=in.force.ids[-c(nrow(in.force.ids),nrow(in.force.ids)-1),]
+in.force.ids=in.force.ids[-nrow(in.force.ids),]
 
 library(openxlsx)
 
@@ -47,5 +48,5 @@ addWorksheet(wb, sheet1)
 addWorksheet(wb, sheet2)
 writeData(wb, sheet1, new.ids)
 writeData(wb, sheet2, in.force.ids)
-saveWorkbook(wb,file=paste0(data.path,'New and in force interventions by quarter.xlsx'))
+saveWorkbook(wb,file=paste0(data.path,'New and in force interventions by quarter.xlsx'),overwrite=T)
 
