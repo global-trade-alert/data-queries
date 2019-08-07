@@ -10,6 +10,17 @@ gta_data_slicer()
 
 data.path='4 data queries/190807 Jens Hjarsbech Globalization Index/data/'
 
+
+#### QUERY
+# I want to construct the following series, but on a quarterly basis basis:
+  
+# The number of harmful and the number of liberalizing interventions globally and 
+# affecting the EU and Denmark.
+# I would need both the new interventions each new quarter but also 
+# the number of interventions currently in force for each quarter from the beginning of your time series.
+
+
+
 # with internal data ------------------------------------------------------
 new.ids=unique(subset(master.sliced,!is.na(date.implemented),select=c('date.implemented','intervention.id')))
 new.ids$qtr.impl=as.yearqtr(as.Date(new.ids$date.implemented,"%Y-%m-%d"))
