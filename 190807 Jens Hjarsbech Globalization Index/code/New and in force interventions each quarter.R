@@ -20,9 +20,7 @@ data.path='4 data queries/190807 Jens Hjarsbech Globalization Index/data/'
 # the number of interventions currently in force for each quarter from the beginning of your time series.
 
 
-
-# with internal data ------------------------------------------------------
-new.ids=unique(subset(master.sliced,!is.na(date.implemented) & date.implemented<=Sys.Date(),select=c('date.implemented','intervention.id')))
+base.data=unique(subset(master.sliced,!is.na(date.implemented) & date.implemented<=Sys.Date(), select=c('date.implemented','date.removed','intervention.id')))
 new.ids$qtr.impl=as.yearqtr(as.Date(new.ids$date.implemented,"%Y-%m-%d"))
 new.ids=aggregate(intervention.id~qtr.impl,new.ids,function(x) length(unique(x)))
 
