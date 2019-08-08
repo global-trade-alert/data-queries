@@ -47,7 +47,7 @@ for(base in 1:length(list(eu.base,dk.base))){
   
   #if implemented in a quarter, then it is considered in force in this quarter (<=)
   #if removed during a quarter, then it is not considered in force this quarter (<)
-  for (qtr in paste0(rep(seq(2008,2019,1),each=4),' Q',1:4)[1]){
+  for (qtr in paste0(rep(seq(2008,2019,1),each=4),' Q',1:4)){
     
     in.force.ids[[qtr]]=0
     in.force.ids[[qtr]][intersect(which(in.force.ids$qtr.impl<=as.yearqtr(qtr)),(which((in.force.ids$qtr.rem>as.yearqtr(qtr)) | (is.na(in.force.ids$qtr.rem)==T))))] = 1
