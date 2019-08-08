@@ -20,7 +20,7 @@ gta_data_slicer()
 base.data=subset(master.sliced, a.un %in% subset(country.names,is.eu==T)$un_code)
 base.data$stance="harmful"
 base.data$stance[base.data$gta.evaluation=="Green"]="liberalising"
-base.data=unique(subset(base.data,!is.na(date.implemented) & date.implemented<=Sys.Date(), select=c('date.implemented','date.removed','intervention.id','stance','affected.jurisdiction')))
+base.data=unique(subset(base.data,!is.na(date.implemented) & date.implemented>="2008-11-01" & date.implemented<=Sys.Date(), select=c('date.implemented','date.removed','intervention.id','stance','affected.jurisdiction')))
 
 eu.base=unique(subset(base.data,select=c('date.implemented','date.removed','intervention.id','stance')))
 dk.base=unique(subset(base.data,affected.jurisdiction=='Denmark',select=c('date.implemented','date.removed','intervention.id','stance')))
@@ -41,7 +41,7 @@ for(base in 1:length(list(eu.base,dk.base))){
   new.ids=new.ids[-nrow(new.ids),]
   new.ids[is.na(new.ids)]=0
   
-  setnames(new.ids,names(new.ids),c('Quarter','Number of new liberalising interventions implemented','Number of new harmful interventions implemented'))
+  setnames(new.ids,names(new.ids),c('Quarter','Number of new harmful interventions implemented','Number of new liberalising interventions implemented'))
   
   in.force.ids$qtr.impl=as.yearqtr(as.Date(in.force.ids$date.implemented,"%Y-%m-%d"))
   in.force.ids$qtr.rem=as.yearqtr(as.Date(in.force.ids$date.removed,"%Y-%m-%d"))
@@ -52,7 +52,7 @@ for(base in 1:length(list(eu.base,dk.base))){
   for (qtr in paste0(rep(seq(2008,2019,1),each=4),' Q',1:4)){
     
     in.force.ids[[qtr]]=0
-    in.force.ids[[qtr]][intersect(which(in.force.ids$qtr.impl<=as.yearqtr(qtr)),(which((in.force.ids$qtr.rem>as.yearqtr(qtr)) | (is.na(in.force.ids$qtr.rem)==T))))] = 1
+    in.force.ids[[qtr]][intersect(which(in.force.ids$qtr.impl<=as.yearqtr(qtr)),(which((in.force.ids$qtr.rem>=as.yearqtr(qtr)) | (is.na(in.force.ids$qtr.rem)==T))))] = 1
     
   }
   
