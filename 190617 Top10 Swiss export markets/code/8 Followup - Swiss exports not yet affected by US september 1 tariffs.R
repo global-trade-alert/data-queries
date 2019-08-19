@@ -60,10 +60,12 @@ perc.swiss.exp.unaffected.china=paste(swiss.exp.unaffected.china/swiss.exp.china
 
 swiss.exp.unaffected.all
 perc.swiss.exp.unaffected.all
+swiss.exp.china
 perc.swiss.exp.unaffected.china
 
 output=data.frame('Total value of Swiss exports in products not yet hit by US tariffs'=swiss.exp.unaffected.all,
                   'Percentage of total value of Swiss exports in products not yet hit by US tariffs over total swiss exports to china'=perc.swiss.exp.unaffected.all,
+                  'Total value of Swiss exports to China in products not yet hit by US tariffs'=swiss.exp.unaffected.china,
                   'Percentage of total value of Swiss exports to China in products not yet hit by US tariffs over total swiss exports to china'=perc.swiss.exp.unaffected.china)
 
 writexl::write_xlsx(output,path=paste0(output.path,'Swiss trade diversion update.xlsx'))
