@@ -11,3 +11,11 @@ gold = c(710811, 710812, 710813, 710820) # EXCLUDE GOLD FROM SWISS EXPORTS
 
 # IDENTIFIED CAR AND CAR RELATED HS CODES:
 hs.car <- as.numeric(gta_hs_code_check(codes = c(8701, 8702, 8703, 8704, 8705, 8706, 8707, 8708, 8709)))
+
+
+source('0 report production/GTA 24/help files/GTA 24 cutoff and definitions.R')
+gta_data_slicer(intervention.ids=trade.war.us,
+                keep.interventions = T,
+                gta.evaluation = c('Amber','Red'))
+us.affected.products=unique(as.numeric(unlist(strsplit(aggregate(affected.product~i.un,master.sliced,function(x) paste(x, collapse=', '))$affected.product, ',')))) 
+
