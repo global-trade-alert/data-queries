@@ -17,5 +17,6 @@ source('0 report production/GTA 24/help files/GTA 24 cutoff and definitions.R')
 gtalibrary::gta_data_slicer(intervention.ids=trade.war.us,
                 keep.interventions = T,
                 gta.evaluation = c('Amber','Red'))
+master.sliced=subset(master.sliced, intervention.id %in% c(63051,57917,62073))
 us.affected.products=unique(as.numeric(unlist(strsplit(aggregate(affected.product~i.un,master.sliced,function(x) paste(x, collapse=', '))$affected.product, ',')))) 
 
