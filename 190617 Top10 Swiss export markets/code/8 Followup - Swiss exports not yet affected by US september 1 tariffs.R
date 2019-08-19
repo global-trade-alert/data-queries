@@ -10,7 +10,8 @@ source("4 data queries/190617 Top10 Swiss export markets/code/0 Definitions.R")
 # SE:
 # I am updating the paper I presented at the Swiss National Bank on 4 July (attached).
 # 
-# In June you made some calculations of the Swiss exports that might benefit from US tariffs on Chinese imports. Now that President Trump has threatened all remaining Chinese exports to the USA, can you please calculate the total value of Swiss exports that are in products that have not yet been hit by US tariffs. Please also report this value as a percentage of all Swiss exports to China. Please do these calculations with 2017 UN trade data.
+# In June you made some calculations of the Swiss exports that might benefit from US tariffs on Chinese imports. 
+# Now that President Trump has threatened all remaining Chinese exports to the USA, can you please calculate the total value of Swiss exports that are in products that have not yet been hit by US tariffs. Please also report this value as a percentage of all Swiss exports to China. Please do these calculations with 2017 UN trade data.
 # 
 # Please then repeat the calculation for Swiss exports to China, again only as they relate to the products that China has not yet put tariffs on imports from the United States.
 # 
@@ -21,6 +22,24 @@ source("4 data queries/190617 Top10 Swiss export markets/code/0 Definitions.R")
 
 #personal note: It seems Patrick and Simon had a convention of not including gold which i followed 
 
+gta_trade_value_bilateral(exporting.country='Switzerland', 
+                                        keep.exporter = T,
+                                        trade.data = '2017')
+swiss.exports=trade.base.bilateral
+
+# value of non-affected trade
+value.ch.exports=sum(subset(swiss.exports, ! hs6 %in% c(gold))$trade.value)
+value.ch.exports.not.hit=sum(subset(swiss.exports, ! hs6 %in% c(gold,us.affected.products))$trade.value)
+share.ch.exports.not.hit=value.ch.exports.not.hit/value.ch.exports
+scales::percent(share.ch.exports.not.hit)
+
+value.ch.exports.chn=sum(subset(swiss.exports, ! hs6 %in% c(gold) & i.un==156)$trade.value)
+value.ch.exports.chn.not.hit=sum(subset(swiss.exports, ! hs6 %in% c(gold,us.affected.products) & i.un==156)$trade.value)
+share.ch.exports.chn.not.hit=value.ch.exports.chn.not.hit/value.ch.exports.chn
+scales::percent(share.ch.exports.chn.not.hit)
+
+
+## KS original
 gta_trade_value_bilateral(exporting.country='Switzerland', 
                           keep.exporter = T,
                           hs.codes = c(gold,us.affected.products),
