@@ -66,7 +66,10 @@ load(paste0(data.path,'trade ebrd eu 15.Rdata'))
 
 tsh=50000000
 
-#is the data faulty? Why is there a un code of 0 in column 'a.un'? Does this mean unknown?
+# Removing a.un = 0. That's world
+trade=subset(trade, a.un>0)
+
+
 exporting.base=aggregate(trade.value~a.un+hs6+year,trade,sum)
 exp.min.base=data.frame(hs=hs.codes)
 
