@@ -46,6 +46,22 @@ trade.2016.2017=read_csv(paste0(data.path,'2016-2017 - HS as reported - AG6 - AL
 names(trade.2015)=gsub(' ','.',names(trade.2015))
 names(trade.2016.2017)=gsub(' ','.',names(trade.2016.2017))
 
+
+# Looking for missing countries.
+# trade.2015=subset(trade.2015, Trade.Flow.Description=='Import')
+# trade.2016.2017=subset(trade.2016.2017, Trade.Flow.Description=='Import')
+# 
+# trade=rbind(trade.2015,trade.2016.2017)
+# rm(trade.2015,trade.2016.2017)
+# save(trade, file=paste0(data.path,'trade full set.Rdata'))
+# 
+# missing.countries=c("Belarus","Austria","Mongolia","Morocco")
+# mc.un=country.names$un_code[country.names$name %in% missing.countries]
+# missing.countries %in% unique(trade$Reporter.Description)
+# missing.countries %in% unique(trade$Partner.Description)
+# trade.check=aggregate(Value ~ Year + Reporter.Code, subset(trade.full, Reporter.Description %in% missing.countries & Partner.Description!="World"),sum)
+
+
 trade.2015=subset(trade.2015, Trade.Flow.Description=='Import' & (Reporter.Code %in% c(cty.ebrd,cty.eu15) | Partner.Code %in% c(cty.ebrd,cty.eu15)) ,select=c('Reporter.Code','Partner.Code','Commodity.Code','Value','Year'))
 trade.2016.2017=subset(trade.2016.2017, Trade.Flow.Description=='Import' & (Reporter.Code %in% c(cty.ebrd,cty.eu15) | Partner.Code %in% c(cty.ebrd,cty.eu15)),select=c('Reporter.Code','Partner.Code','Commodity.Code','Value','Year'))
 
@@ -55,6 +71,7 @@ rm(trade.2015,trade.2016.2017)
 trade$Commodity.Code=as.numeric(gsub('\\D','',trade$Commodity.Code))
 trade=subset(trade, Commodity.Code %in% hs.codes)
 
+
 setnames(trade, names(trade),c('i.un','a.un','hs6','trade.value','year'))
 save(trade, file=paste0(data.path,'trade ebrd eu 15.Rdata'))
 
@@ -63,6 +80,10 @@ save(trade, file=paste0(data.path,'trade ebrd eu 15.Rdata'))
 # If the minimum is over 50 million $ then color green, mark as red if not
 # do this for EU15 and EBRD separately 
 load(paste0(data.path,'trade ebrd eu 15.Rdata'))
+
+# missing.countries=c("Belarus","Austria","Mongolia","Morocco")
+# mc.un=country.names$un_code[country.names$name %in% missing.countries]
+# trade.check=aggregate(trade.value ~ year + i.un, subset(trade, i.un %in% mc.un), sum )
 
 tsh=50000000
 
