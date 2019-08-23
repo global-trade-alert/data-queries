@@ -81,9 +81,14 @@ save(trade, file=paste0(data.path,'trade ebrd eu 15.Rdata'))
 # do this for EU15 and EBRD separately 
 load(paste0(data.path,'trade ebrd eu 15.Rdata'))
 
-# missing.countries=c("Belarus","Austria","Mongolia","Morocco")
-# mc.un=country.names$un_code[country.names$name %in% missing.countries]
-# trade.check=aggregate(trade.value ~ year + i.un, subset(trade, i.un %in% mc.un), sum )
+missing.countries=c("Belarus","Austria","Mongolia","Morocco")
+mc.un=country.names$un_code[country.names$name %in% missing.countries]
+aggregate(trade.value ~ year + i.un, subset(trade, i.un %in% mc.un), sum )
+
+## Adjusting for countries that have not reported 2017 trade data
+trade.17=subset(trade, i.un %in% mc.un & year==2015)
+trade.17$year=2017
+trade=rbind(trade, trade.17)
 
 tsh=50000000
 
