@@ -179,6 +179,7 @@ gta_trade_coverage(coverage.period=c(2019,2019),
                    keep.exporters = T,
                    trade.data="2017",
                    trade.statistic = "value",
+                   implementation.period = c("2019-01-01","2019-12-31"),
                    intra.year.duration = F)
 
 us.2019=trade.coverage.estimates[,4]
@@ -193,6 +194,7 @@ gta_trade_coverage(coverage.period=c(2019,2019),
                    keep.exporters = T,
                    trade.data="2017",
                    trade.statistic = "value",
+                   implementation.period = c("2019-01-01","2019-12-31"),
                    intra.year.duration = F)
 
 chn.2019=trade.coverage.estimates[,4]
