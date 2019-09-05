@@ -2,6 +2,7 @@ rm(list=ls())
 
 library(gtalibrary)
 library(ggplot2)
+library(lubridate)
 
 #Changes made: 
 #removal trump tweets
@@ -21,6 +22,12 @@ new.ids=c(71785,71833,72996,73056)
 new.ids=c(new.ids,subset(master.sliced, state.act.id %in% new.acts)$intervention.id)
 trade.war.chn=c(trade.war.chn,new.ids[new.ids %in% subset(master.sliced, i.un==156)$intervention.id])
 trade.war.us=c(trade.war.us,new.ids[new.ids %in% subset(master.sliced, i.un==840)$intervention.id])
+
+trade.war.chn.18=trade.war.chn[trade.war.chn %in% subset(master.sliced,year(date.implemented)==2018)$intervention.id]
+trade.war.us.18=trade.war.us[trade.war.us %in% subset(master.sliced,year(date.implemented)==2018)$intervention.id]
+
+trade.war.chn.19=trade.war.chn[trade.war.chn %in% subset(master.sliced,year(date.implemented)==2019)$intervention.id]
+trade.war.us.19=trade.war.us[trade.war.us %in% subset(master.sliced,year(date.implemented)==2019)$intervention.id]
 
 # Please calculate for the latest year available the % of world trade associated with Sino US bilateral trade.
 gta_trade_value_bilateral(trade.data = "2017")
@@ -90,7 +97,7 @@ us.stuff=us.stuff+trade.coverage.estimates[which(trade.coverage.estimates$`Expor
 
 # Then the first left hand column would have the Trump tariff increases of 2018, 
 gta_trade_coverage(coverage.period=c(2018,2018),
-                   intervention.ids = trade.war.us,
+                   intervention.ids = trade.war.us.18,
                    keep.interventions = T,
                    exporters = "China",
                    keep.exporters = T,
@@ -104,7 +111,7 @@ us.2018=trade.coverage.estimates[,4]
 
 # second the next column on the left would add the Chinese tariff increases and 
 gta_trade_coverage(coverage.period=c(2018,2018),
-                   intervention.ids = trade.war.chn,
+                   intervention.ids = trade.war.chn.18,
                    keep.interventions = T,
                    exporters = "United States of America",
                    keep.exporters = T,
@@ -181,13 +188,12 @@ us.stuff.19=us.stuff.19+trade.coverage.estimates[which(trade.coverage.estimates$
 
 # Then the first left hand column would have the Trump tariff increases of 2019, 
 gta_trade_coverage(coverage.period=c(2019,2019),
-                   intervention.ids = trade.war.us,
+                   intervention.ids = trade.war.us.19,
                    keep.interventions = T,
                    exporters = "China",
                    keep.exporters = T,
                    trade.data="2017",
                    trade.statistic = "value",
-                   implementation.period = c("2019-01-01","2019-12-31"),
                    intra.year.duration = F)
 
 us.2019=trade.coverage.estimates[,4]
@@ -196,13 +202,12 @@ us.2019=trade.coverage.estimates[,4]
 
 # second the next column on the left would add the Chinese tariff increases and 
 gta_trade_coverage(coverage.period=c(2019,2019),
-                   intervention.ids = trade.war.chn,
+                   intervention.ids = trade.war.chn.19,
                    keep.interventions = T,
                    exporters = "United States of America",
                    keep.exporters = T,
                    trade.data="2017",
                    trade.statistic = "value",
-                   implementation.period = c("2019-01-01","2019-12-31"),
                    intra.year.duration = F)
 
 chn.2019=trade.coverage.estimates[,4]
@@ -294,7 +299,7 @@ warter.shed=ggplot(war.terfall, aes(act.title, fill = act.title)) +
                 xmin = id - 0.45, xmax = id + 0.45, 
                 ymin = end, ymax = start))+
   scale_fill_manual(values=c(gta_colour$qualitative[c(1,7,5,3,8,4,2)]))+
-  scale_y_continuous(limit=c(0,700),breaks=seq(0,700,100), sec.axis = dup_axis())+
+  scale_y_continuous(limit=c(0,1400),breaks=seq(0,1400,100), sec.axis = dup_axis())+
   labs(x="", y="USD billion", color="")+
   gta_theme(x.bottom.angle = 0)+
   theme(axis.text.x.bottom = element_text(vjust = 0.5, size=13),
