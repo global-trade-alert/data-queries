@@ -38,6 +38,14 @@ new.ids=c(71785,71833,72996,73056)
 new.ids=c(new.ids,subset(master.sliced, state.act.id %in% new.acts)$intervention.id)
 
 trade.war.intervention.ids=c(trade.war.intervention.ids,new.ids)
+
+
+#JF: Please be sure that 73196 is removed from all trade war calculations
+!73196 %in% trade.war.intervention.ids
+#JF: alternatively, ensure that no intervention with an inception date in the future is counted
+nrow(subset(master.sliced, intervention.id %in% trade.war.intervention.ids & date.implemented > Sys.Date()))
+
+
 # find jumbos -------------------------------------------------------------
 trade=subset(final, Year %in% c(2005:2007))[,c("Reporter.un","Partner.un","Year","Tariff.line","Value")]
 rm(final)
@@ -94,7 +102,7 @@ trade.jumbo.intervention = subset(trade.coverage.base, trade.value >= jumbo.thre
 jumbo.ids = unique(trade.jumbo.intervention$intervention.id)
 save(jumbo.ids, trade.jumbo.intervention, file = paste0(data.path,"/trade per jumbo intervention.Rdata"))
 
-
+load(paste0(data.path,"/trade per jumbo intervention.Rdata"))
 # plot --------------------------------------------------------------------
 
 gta_colour_palette()
@@ -117,7 +125,8 @@ fig.7 =ggplot(annual.jumbos, aes(x=year.implemented,y=intervention.id,fill=inter
   ylab(paste('Number of jumbo protectionist measures implemented')) +
   scale_fill_manual(name='',values = color.values, labels=c('Trade war interventions','Non-trade war interventions')) +
   gta_theme() +
-  scale_y_continuous(sec.axis = dup_axis())
+  scale_y_continuous(breaks=c(0,10,20,30,40,50),labels=c(0,10,20,30,40,50),sec.axis = dup_axis()) +
+  coord_cartesian(ylim = c(0,52))
 
 
 fig.7
