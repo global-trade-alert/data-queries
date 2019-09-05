@@ -73,11 +73,15 @@ for(base in 1:length(list(eu.base,dk.base,base.data))){
   new.ids=new.ids[as.yearqtr(new.ids$Quarter) > as.yearqtr('2008 Q3'),]
   in.force=in.force[as.yearqtr(in.force$Quarter) > as.yearqtr('2008 Q3'),]
   
+  new.ids=new.ids[as.yearqtr(new.ids$Quarter) > as.yearqtr('2008 Q3'),]
+  in.force=in.force[,c(1,grep('harm',names(in.force)),grep('lib',names(in.force)))]
+  
   assign(paste0(base.name,'.in.force'),in.force)
   assign(paste0(base.name,'.new.ids'),new.ids)
   
   
 }
+
 
 library(openxlsx)
 
