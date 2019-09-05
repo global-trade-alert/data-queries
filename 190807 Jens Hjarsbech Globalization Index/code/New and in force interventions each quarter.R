@@ -17,18 +17,18 @@ data.path='4 data queries/190807 Jens Hjarsbech Globalization Index/data/'
 # the number of interventions currently in force for each quarter from the beginning of your time series.
 
 gta_data_slicer()
-base.data=subset(master.sliced, a.un %in% subset(country.names,is.eu==T)$un_code)
+base.data=master.sliced
 base.data$stance="harmful"
 base.data$stance[base.data$gta.evaluation=="Green"]="liberalising"
 base.data=unique(subset(base.data,!is.na(date.implemented) & date.implemented>="2008-11-01" & date.implemented<=Sys.Date(), select=c('date.implemented','date.removed','intervention.id','stance','affected.jurisdiction')))
 
-eu.base=unique(subset(base.data,select=c('date.implemented','date.removed','intervention.id','stance')))
+eu.base=unique(subset(base.data,affected.jurisdiction %in% subset(country.names,is.eu==T)$name,select=c('date.implemented','date.removed','intervention.id','stance')))
 dk.base=unique(subset(base.data,affected.jurisdiction=='Denmark',select=c('date.implemented','date.removed','intervention.id','stance')))
-
+base.data=unique(subset(base.data,select=c('date.implemented','date.removed','intervention.id','stance')))
 # eu ----------------------------------------------------------------------
-for(base in 1:length(list(eu.base,dk.base))){
-  data=list(eu.base,dk.base)[[base]]
-  base.name=c('eu','dk')[[base]]
+for(base in 1:length(list(eu.base,dk.base,base.data))){
+  data=list(eu.base,dk.base,base.data)[[base]]
+  base.name=c('eu','dk','world')[[base]]
   
   new.ids=data
   in.force.ids=data
@@ -90,4 +90,10 @@ addWorksheet(wb, sheet3)
 addWorksheet(wb, sheet4)
 writeData(wb, sheet3, dk.new.ids)
 writeData(wb, sheet4, dk.in.force)
+sheet5='World aff. new int.'
+sheet6='World aff. in force int.'
+addWorksheet(wb, sheet5)
+addWorksheet(wb, sheet6)
+writeData(wb, sheet5, world.new.ids)
+writeData(wb, sheet6, world.in.force)
 saveWorkbook(wb,file=paste0(data.path,'New and in force interventions by quarter.xlsx'),overwrite=T)
