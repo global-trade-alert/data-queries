@@ -14,6 +14,14 @@ output.path=paste0(query.path,'new output/')
 gta_setwd()
 source("0 report production/GTA 24/help files/GTA 24 cutoff and definitions.R")
 
+#new trade war interventions
+gta_data_slicer()
+new.acts=c(37055,37190,37189,38163)
+new.ids=c(71785,71833,72996,73056)
+new.ids=c(new.ids,subset(master.sliced, state.act.id %in% new.acts)$intervention.id)
+trade.war.chn=c(trade.war.chn,new.ids[new.ids %in% subset(master.sliced, i.un==156)$intervention.id])
+trade.war.us=c(trade.war.us,new.ids[new.ids %in% subset(master.sliced, i.un==840)$intervention.id])
+
 # Please calculate for the latest year available the % of world trade associated with Sino US bilateral trade.
 gta_trade_value_bilateral(trade.data = "2017")
 total.trade=sum(trade.base.bilateral$trade.value)
@@ -286,7 +294,7 @@ warter.shed=ggplot(war.terfall, aes(act.title, fill = act.title)) +
                 xmin = id - 0.45, xmax = id + 0.45, 
                 ymin = end, ymax = start))+
   scale_fill_manual(values=c(gta_colour$qualitative[c(1,7,5,3,8,4,2)]))+
-  scale_y_continuous(limit=c(0,1400),breaks=seq(0,1400,100), sec.axis = dup_axis())+
+  scale_y_continuous(limit=c(0,700),breaks=seq(0,700,100), sec.axis = dup_axis())+
   labs(x="", y="USD billion", color="")+
   gta_theme(x.bottom.angle = 0)+
   theme(axis.text.x.bottom = element_text(vjust = 0.5, size=13),
