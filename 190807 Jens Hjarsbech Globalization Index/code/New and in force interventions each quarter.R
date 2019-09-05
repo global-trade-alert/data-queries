@@ -56,6 +56,7 @@ for(base in 1:length(list(eu.base,dk.base,base.data))){
     
   }
   
+
   red.in.force.ids=subset(in.force.ids,stance=='harmful',select=!(names(in.force.ids) %in% c('qtr.impl','qtr.rem','stance')))
   red.in.force.ids=data.frame(quarter=names(red.in.force.ids),
                           in.force.interventions=colSums(red.in.force.ids))
@@ -68,6 +69,9 @@ for(base in 1:length(list(eu.base,dk.base,base.data))){
   in.force=in.force[-nrow(in.force),]
   
   setnames(in.force,names(in.force),c('Quarter','Total in force liberalising interventions','Total in force harmful interventions'))
+  
+  new.ids=new.ids[as.yearqtr(new.ids$Quarter) > as.yearqtr('2008 Q3'),]
+  in.force=in.force[as.yearqtr(in.force$Quarter) > as.yearqtr('2008 Q3'),]
   
   assign(paste0(base.name,'.in.force'),in.force)
   assign(paste0(base.name,'.new.ids'),new.ids)
