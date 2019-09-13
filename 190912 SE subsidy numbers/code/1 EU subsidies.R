@@ -79,6 +79,10 @@ totEuSubs <- sum(totEuSubs$intervention.id)
 totEuSubs
 
 # Total EU Manufacturing subsidies
+sectors <- cSplit(subset(master.sliced, is.na(affected.product)), which(colnames(master.sliced)=="affected.sector"), direction="long", sep=",")
+sectors=subset(sectors, affected.sector %in% cpc.to.hs$cpc[cpc.to.hs$hs %in% manufacturing])
+sectors=aggregate(intervention.id  ~ year(date.implemented), sectors, function(x) length(unique(x)))
+
 totEuSubsManu <- cSplit(master.sliced, which(colnames(master.sliced)=="affected.product"), direction="long", sep=",")
 totEuSubsManu <- aggregate(intervention.id ~ year(date.implemented), subset(totEuSubsManu, affected.product %in% manufacturing), function(x) length(unique(x)))
 totEuSubsManu <- sum(totEuSubsManu$intervention.id)
