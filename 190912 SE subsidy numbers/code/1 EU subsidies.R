@@ -7,6 +7,8 @@ gta_setwd()
 # DEFINITIONS
 output.path = "4 data queries/190912 SE subsidy numbers/output/"
 mast.chapter = "L" # SUBSIDIES
+
+## ADD THIS TO THE GTA LIBRARY! I don't want such definitions floating around in individual codes so that we can scramble to find what was used in "quick updates" 5 months later.
 manufacturing <- gtalibrary::hs.codes$hs.code[hs.codes$is.agriculture==F & hs.codes$is.raw.material==F & ! hs.codes$hs.code %in% c(seq(410000,419999,1))]
 eu28 <- gtalibrary::country.correspondence$un_code[country.correspondence$name=="EU-28"]
 
