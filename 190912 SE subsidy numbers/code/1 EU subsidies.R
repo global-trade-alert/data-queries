@@ -42,7 +42,7 @@ worldASubsidies
 
 gta_trade_coverage(gta.evaluation = c("Red","Amber"),
                    exporters = eu28,
-                   keep.exporters = F,
+                   keep.exporters = T,
                    importers = eu28,
                    keep.importers = F,
                    hs.codes = manufacturing,
