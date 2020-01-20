@@ -13,6 +13,15 @@ query.path = '4 data queries/200118 BlackRock data sample/'
 data.path = paste0(query.path, 'data/')
 output.path = paste0(query.path, 'output/')
 
+# Req: We are interested in the time-series of both (harmful and liberalizing).
+#      Import barriers and export subsidies should be fine.
+#      Restrict to countries provided
+#      Trade data includes values of year prior to announcement, moving average is done with year prior to announcement and two years prior
+#      Trade data include int.id/cty.impl/cty.imp/cty.exp/date.ann/date.impl/date.rem/prod.code/trade.val/sect.code
+#      Meta data include int.id/int.type/gta.eval/mast.chapt/impl.level/firm.specificity
+
+
+
 jur.list = gta_sql_load_table('jurisdiction')
 orig.cty.list = readxl::read_xlsx(paste0(data.path,'dm_em_country_list.xlsx'),sheet=1)$Countries
 gta.cty.list = mapvalues(orig.cty.list, c("UTD ARAB EM","CZECH REPUBLIC","KOREA","NETHERLAND","TAIWAN","UNITED STATES"),
