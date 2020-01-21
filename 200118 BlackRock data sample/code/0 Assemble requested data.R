@@ -118,6 +118,50 @@ rm(tl.no.removal)
 
 
 
+### adding aggregate prior/new level values & unit where necessary
+tl.with.treatement=subset(tl.treatment, !(is.na(prior.level) & is.na(new.level)))
+tl.with.treatement$product.specific.treatment=T
+
+tl.no.treatement=subset(tl.treatment, is.na(prior.level) & is.na(new.level))
+tl.no.treatement$new.level=NULL
+tl.no.treatement$prior.level=NULL
+tl.no.treatement$unit=NULL
+tl.no.treatement$product.specific.treatment=F
+gta.int=gta_sql_get_value(paste0("SELECT id intervention_id, prior_level, new_level, unit
+                                  FROM gta_intervention
+                                  WHERE id IN (",paste(unique(tl.no.treatement$intervention.id), collapse=","),")
+                                  AND unit >0"))
+gta.int$new.level=as.numeric(as.character(gta.int$new.level))
+gta.int$prior.level=as.numeric(as.character(gta.int$prior.level))
+gta.int=subset(gta.int, is.na(new.level)==F | is.na(prior.level)==F)
+
+tl.no.treatement=merge(tl.no.treatement, gta.int, by="intervention.id", all.x=T)
+tl.treatment=rbind(tl.with.treatement,
+                   tl.no.treatement)
+
+rm(tl.with.treatement,tl.no.treatement)
+
+## unit.cleaning
+tl.treatment$unit[grepl("%", tl.treatment$prior.level)|grepl("%", tl.treatment$new.level)]=1
+tl.treatment$prior.level=gsub("%","",tl.treatment$prior.level)
+tl.treatment$new.level=gsub("%","",tl.treatment$new.level)
+tl.treatment$new.level=as.numeric(as.character(tl.treatment$new.level))
+tl.treatment$prior.level=as.numeric(as.character(tl.treatment$prior.level))
+tl.treatment$unit[is.na(tl.treatment$new.level)|is.na(tl.treatment$prior.level)]=NA
+tl.treatment$unit[tl.treatment$unit==0]=1
+
+unit.df=data.frame(unit=c(1:19),
+                   unit.type=c("percent", "budget (USD)", "budget (USD)", "USD/MT", "USD/kg", "USD/tonne", "USD/unit", "count", "USD/litre", "USD/pc", "USD/squaremetre", "USD/pair", "USD/ldt", "USD/lb", "USD/gallon", "USD/hl", "USD/LAL", "USD/tyre", "USD/stick"),
+                   stringsAsFactors = F)
+tl.treatment=merge(tl.treatment, unit.df, by="unit", all.x=T)
+
+## dates cleanring (somthing went wrong above)
+tl.treatment$date.implemented[!grepl("-",tl.treatment$date.implemented)]=as.character(as.Date(as.numeric(tl.treatment$date.implemented[!grepl("-",tl.treatment$date.implemented)]), origin="1970-01-01"))
+tl.treatment$date.removed[!grepl("-",tl.treatment$date.removed)]=as.character(as.Date(as.numeric(tl.treatment$date.removed[!grepl("-",tl.treatment$date.removed)]), origin="1970-01-01"))
+tl.treatment$date.implemented=as.Date(tl.treatment$date.implemented, "%Y-%m-%d")
+tl.treatment$date.removed=as.Date(tl.treatment$date.removed, "%Y-%m-%d")
+tl.treatment$unit=NULL
+
 ### Adding trade values
 # accounting for interventions announced in 2020 that do not have trade data in the prior year.
 interventions.2019=unique(trade.value.data$intervention.id[trade.value.data$t.data==2019])
