@@ -17,7 +17,7 @@ output.path = paste0(query.path, 'output/')
 #      Import barriers and export subsidies should be fine.
 #      Restrict to countries provided
 #      Trade data includes values of year prior to announcement, moving average is done with year prior to announcement and two years prior
-#      Trade data include int.id/cty.impl/cty.imp/cty.exp/date.ann/date.impl/date.rem/prod.code/trade.val/sect.code
+#      Trade data include int.id/cty.impl/cty.imp/cty.exp/date.ann/date.impl/date.rem/prod.code/trade.val/sect.code/value.new/value.unit/value.tl.specific [where available]
 #      Meta data include int.id/int.type/gta.eval/mast.chapt/impl.level/firm.specificity
 
 
@@ -52,6 +52,7 @@ gta_data_slicer()
 # length(setdiff(main.meta.data$intervention.id, slicer.meta.data$intervention.id))
 # length(setdiff(slicer.meta.data$intervention.id, main.meta.data$intervention.id))
 
+
 # Assemble trade value data  --------------------------------------------------------
 
 # gta_distorted_market what does this table indicate? int.id / jur.id / type (Deleted / Normal / Added)
@@ -62,7 +63,7 @@ pull.it.rev = paste("SELECT gta_it_revised.intervention_id, i_un.un_code i_un, d
                     "a_un.un_code a_un, gta_it_revised.sector_code_3, gta_measure_type.name, gta_tariff_line.code hs6",
                     "FROM gta_it_revised, gta_intervention, gta_measure_type, gta_tariff_line, gta_jurisdiction i_un, gta_jurisdiction d_un, gta_jurisdiction a_un",
                     "WHERE gta_it_revised.intervention_id = gta_intervention.id",
-                    "AND gta_measure.staus_id=4",
+                    "AND gta_intervention.measure_id IN (SELECT id FROM gta_measure WHERE status_id = 4)",
                     "AND gta_intervention.measure_type_id = gta_measure_type.id",
                     "AND gta_measure_type.name IN ('Import tariff','Export subsidy')",
                     "AND gta_it_revised.tariff_line_id = gta_tariff_line.id",
@@ -135,6 +136,8 @@ trade.value.data$country.exporting = mapvalues(toupper(trade.value.data$country.
 trade.value.data = subset(trade.value.data, select=c('intervention.id','country.implementing','country.importing','country.exporting','date.announced',
                                                      'date.implemented','date.removed','hs6','trade.value','trade.value.mov.avg','sector.code.3'))
 data.table::setnames(trade.value.data, c('hs6','sector.code.3'),c('product.code','sector.code'))
+
+
 
 
 # Save files --------------------------------------------------------------
