@@ -181,11 +181,19 @@ for(yr in 2005:2018){
 }
 
 # moving avg of previous 3 years 
-mov.avg = lapply(req.years, function(x) aggregate(trade.value~i.un+a.un+hs6, subset(t.base, yr %in% (x-2):x), 
-                                                  mean))
-for(i in seq_along(mov.avg)) mov.avg[[i]]$yr = req.years[i]
-mov.avg = do.call("rbind", mov.avg)
-setnames(mov.avg,'trade.value','trade.value.mov.avg')
+# mov.avg = lapply(req.years, function(x) aggregate(trade.value~i.un+a.un+hs6, subset(t.base, yr %in% (x-2):x), 
+#                                                   function(x) sum(x)/3))
+# for(i in seq_along(mov.avg)) mov.avg[[i]]$yr = req.years[i]
+# mov.avg = do.call("rbind", mov.avg)
+# setnames(mov.avg,'trade.value','trade.value.mov.avg')
+
+mov.avg=data.frame()
+for(avg.yr in 2008:2018){
+  mov.avg=aggregate(trade.value~i.un+a.un+hs6, subset(t.base, yr %in% (avg.yr-2):avg.yr), function(x) sum(x)/3)
+  mov.avg$yr=avg.yr
+  print(yr)
+}
+
 
 trade.value.data = merge(trade.value.data, t.base, 
                          by.x=c('i.un','a.un','hs6','t.data'),
