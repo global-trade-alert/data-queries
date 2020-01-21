@@ -21,7 +21,6 @@ output.path = paste0(query.path, 'output/')
 #      Meta data include int.id/int.type/gta.eval/mast.chapt/impl.level/firm.specificity
 
 
-
 jur.list = gta_sql_load_table('jurisdiction')
 orig.cty.list = readxl::read_xlsx(paste0(data.path,'dm_em_country_list.xlsx'),sheet=1)$Countries
 gta.cty.list = mapvalues(orig.cty.list, c("UTD ARAB EM","CZECH REPUBLIC","KOREA","NETHERLAND","TAIWAN","UNITED STATES"),
@@ -88,6 +87,10 @@ trade.value.data = subset(trade.value.data, !(is.na(date.implemented)|is.na(date
 # attach trade values
 trade.value.data$t.data = year(trade.value.data$date.announced)-1
 
+# accounting for interventions announced in 2020 that do not have trade data in the prior year.
+interventions.2019=unique(trade.value.data$intervention.id[trade.value.data$t.data==2019])
+trade.value.data$t.data[trade.value.data$t.data==2019]=2018
+
 req.years = unique(trade.value.data$t.data)
 t.base = data.frame()
 for(yr in 2005:2018){
@@ -95,6 +98,7 @@ for(yr in 2005:2018){
   trade.base.bilateral$yr = yr
   t.base = rbind(t.base, 
                  trade.base.bilateral)
+  
   rm(trade.base.bilateral)
 }
 
