@@ -189,9 +189,13 @@ for(yr in 2005:2018){
 
 mov.avg=data.frame()
 for(avg.yr in 2008:2018){
-  mov.avg=aggregate(trade.value~i.un+a.un+hs6, subset(t.base, yr %in% (avg.yr-2):avg.yr), function(x) sum(x)/3)
-  mov.avg$yr=avg.yr
-  print(yr)
+  m.avg=aggregate(trade.value~i.un+a.un+hs6, subset(t.base, yr %in% (avg.yr-2):avg.yr), function(x) sum(x)/3)
+  m.avg$yr=avg.yr
+  
+  mov.avg=rbind(mov.avg,
+                m.avg)
+  print(avg.yr)
+  rm(m.avg)
 }
 setnames(mov.avg,'trade.value','trade.value.mov.avg')
 
