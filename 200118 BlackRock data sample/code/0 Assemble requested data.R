@@ -65,7 +65,7 @@ pull.it.rev = paste("SELECT gta_it_revised.intervention_id, i_un.un_code i_un, d
                     "WHERE gta_it_revised.intervention_id = gta_intervention.id",
                     "AND gta_intervention.measure_id IN (SELECT id FROM gta_measure WHERE status_id = 4)",
                     "AND gta_intervention.measure_type_id = gta_measure_type.id",
-                    "AND gta_measure_type.name IN ('Import tariff','Export subsidy')",
+                    "AND gta_intervention.affected_flow_id IN (1,3)",
                     "AND gta_it_revised.tariff_line_id = gta_tariff_line.id",
                     "AND gta_it_revised.implementing_jurisdiction_id = i_un.id",
                     "AND gta_it_revised.distorted_market_id = d_un.id",
@@ -136,7 +136,6 @@ trade.value.data$country.exporting = mapvalues(toupper(trade.value.data$country.
 trade.value.data = subset(trade.value.data, select=c('intervention.id','country.implementing','country.importing','country.exporting','date.announced',
                                                      'date.implemented','date.removed','hs6','trade.value','trade.value.mov.avg','sector.code.3'))
 data.table::setnames(trade.value.data, c('hs6','sector.code.3'),c('product.code','sector.code'))
-
 
 
 
