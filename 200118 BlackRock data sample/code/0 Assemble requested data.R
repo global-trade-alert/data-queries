@@ -193,7 +193,7 @@ for(avg.yr in 2008:2018){
   mov.avg$yr=avg.yr
   print(yr)
 }
-
+setnames(mov.avg,'trade.value','trade.value.mov.avg')
 
 trade.value.data = merge(trade.value.data, t.base, 
                          by.x=c('i.un','a.un','hs6','t.data'),
