@@ -62,6 +62,7 @@ pull.it.rev = paste("SELECT gta_it_revised.intervention_id, i_un.un_code i_un, d
                     "a_un.un_code a_un, gta_it_revised.sector_code_3, gta_measure_type.name, gta_tariff_line.code hs6",
                     "FROM gta_it_revised, gta_intervention, gta_measure_type, gta_tariff_line, gta_jurisdiction i_un, gta_jurisdiction d_un, gta_jurisdiction a_un",
                     "WHERE gta_it_revised.intervention_id = gta_intervention.id",
+                    "AND gta_measure.staus_id=4",
                     "AND gta_intervention.measure_type_id = gta_measure_type.id",
                     "AND gta_measure_type.name IN ('Import tariff','Export subsidy')",
                     "AND gta_it_revised.tariff_line_id = gta_tariff_line.id",
