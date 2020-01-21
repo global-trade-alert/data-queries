@@ -86,10 +86,6 @@ trade.value.data = merge(trade.value.data, unique(subset(master.sliced, select=c
 
 trade.value.data = subset(trade.value.data, !(is.na(date.announced)))
 
-# preparing to attach trade values
-trade.value.data$t.data = year(trade.value.data$date.announced)-1
-
-
 ## adding treatment values and accounting for tariff line specific implementation/removal dates
 tl.treatment=unique(trade.value.data[,c("intervention.id","hs6")])
 gta.atl=gta_sql_get_value(paste0("SELECT intervention_id, tariff_line_code hs6, prior_level, new_level, unit, inception_date date_implemented, removal_date date_removed
@@ -162,7 +158,13 @@ tl.treatment$date.implemented=as.Date(tl.treatment$date.implemented, "%Y-%m-%d")
 tl.treatment$date.removed=as.Date(tl.treatment$date.removed, "%Y-%m-%d")
 tl.treatment$unit=NULL
 
+
+trade.value.data=merge(trade.value.data, tl.treatment, by=c("intervention.id", "hs6"), all.x=T)
 ### Adding trade values
+
+# preparing to attach trade values
+trade.value.data$t.data = year(trade.value.data$date.announced)-1
+
 # accounting for interventions announced in 2020 that do not have trade data in the prior year.
 interventions.2019=unique(trade.value.data$intervention.id[trade.value.data$t.data==2019])
 trade.value.data$t.data[trade.value.data$t.data==2019]=2018
@@ -208,7 +210,7 @@ trade.value.data$country.importing = mapvalues(toupper(trade.value.data$country.
 trade.value.data$country.exporting = mapvalues(toupper(trade.value.data$country.exporting), toupper(gta.cty.list), orig.cty.list)
 
 trade.value.data = subset(trade.value.data, select=c('intervention.id','country.implementing','country.importing','country.exporting','date.announced',
-                                                     'date.implemented','date.removed','hs6','trade.value','trade.value.mov.avg','sector.code.3'))
+                                                     'date.implemented','date.removed','hs6',"prior.level","new.level","unit.type",'trade.value','trade.value.mov.avg','sector.code.3'))
 data.table::setnames(trade.value.data, c('hs6','sector.code.3'),c('product.code','sector.code'))
 
 
