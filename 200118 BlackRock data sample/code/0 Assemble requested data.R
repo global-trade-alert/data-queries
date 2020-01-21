@@ -80,15 +80,45 @@ trade.value.data$country.implementing = trade.value.data$i.un
 trade.value.data$country.importing = trade.value.data$d.un #d.un is un.code of distorted.market
 trade.value.data$country.exporting = trade.value.data$a.un
 
-# merge date.rem date.ann date.impl 
-trade.value.data = merge(trade.value.data, unique(subset(master.sliced, select=c('intervention.id','date.implemented','date.announced','date.removed'))), all.x = T,
+# merge date.ann 
+trade.value.data = merge(trade.value.data, unique(subset(master.sliced, select=c('intervention.id','date.announced'))), all.x = T,
                          by='intervention.id')
 
-trade.value.data = subset(trade.value.data, !(is.na(date.implemented)|is.na(date.announced)))
+trade.value.data = subset(trade.value.data, !(is.na(date.announced)))
 
-# attach trade values
+# preparing to attach trade values
 trade.value.data$t.data = year(trade.value.data$date.announced)-1
 
+
+## adding treatment values and accounting for tariff line specific implementation/removal dates
+tl.treatment=unique(trade.value.data[,c("intervention.id","hs6")])
+gta.atl=gta_sql_get_value(paste0("SELECT intervention_id, tariff_line_code hs6, prior_level, new_level, unit, inception_date date_implemented, removal_date date_removed
+                                  FROM gta_affected_tariff_line
+                                  WHERE intervention_id IN (",paste(unique(tl.treatment$intervention.id), collapse=","),")"))
+gta.atl$prior.level[gta.atl$prior.level==""]=NA
+gta.atl$new.level[gta.atl$new.level==""]=NA
+
+
+tl.treatment=merge(tl.treatment, gta.atl, by=c("intervention.id","hs6"), all.x=T)
+
+### adding aggregate implementation/removal dates
+tl.no.inception=subset(tl.treatment, is.na(date.implemented))
+tl.no.inception$date.implemented=NULL
+tl.no.inception=merge(tl.no.inception, unique(master.sliced[,c("intervention.id","date.implemented")]), by="intervention.id", all.x=T)
+tl.treatment=rbind(subset(tl.treatment, is.na(date.implemented)==F),
+                   tl.no.inception)
+rm(tl.no.inception)
+
+tl.no.removal=subset(tl.treatment, is.na(date.removed))
+tl.no.removal$date.removed=NULL
+tl.no.removal=merge(tl.no.removal, unique(master.sliced[,c("intervention.id","date.removed")]), by="intervention.id", all.x=T)
+tl.treatment=rbind(subset(tl.treatment, is.na(date.removed)==F),
+                   tl.no.removal)
+rm(tl.no.removal)
+
+
+
+### Adding trade values
 # accounting for interventions announced in 2020 that do not have trade data in the prior year.
 interventions.2019=unique(trade.value.data$intervention.id[trade.value.data$t.data==2019])
 trade.value.data$t.data[trade.value.data$t.data==2019]=2018
@@ -136,6 +166,8 @@ trade.value.data$country.exporting = mapvalues(toupper(trade.value.data$country.
 trade.value.data = subset(trade.value.data, select=c('intervention.id','country.implementing','country.importing','country.exporting','date.announced',
                                                      'date.implemented','date.removed','hs6','trade.value','trade.value.mov.avg','sector.code.3'))
 data.table::setnames(trade.value.data, c('hs6','sector.code.3'),c('product.code','sector.code'))
+
+
 
 
 
