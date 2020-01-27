@@ -19,7 +19,7 @@ instruments <- gtalibrary::int.mast.types
 instr <- list(list("Any", instruments$intervention.type),
               list("Import tariff", subset(instruments, mast.chapter.id == "TARIFF")$intervention.type),
               list("Subsidies", subset(instruments, mast.chapter.id == "L")$intervention.type),
-              list("Export subsidies", subset(instruments, intervention.type=="Export subsidy")$intervention.type))
+              list("Export subsidies", subset(instruments, intervention.type %in% instruments$intervention.type[instruments$is.export.promotion])$intervention.type))
 
    
 # Global exports affected, stacked up by nr of hits. For World and Canada
