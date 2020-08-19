@@ -48,9 +48,21 @@ if(length(bug.check)>0){
   bug.xlsx=subset(merge(select(gta_state_act, state_act_id, title), select(gta_intervention, state_act_id, intervention_id), by="state_act_id"),
                   intervention_id %in% bug.check)
   xlsx::write.xlsx(bug.xlsx, file="GTA quality control - Horizontal interventions incl sector or product codes.xlsx", row.names = F)
+  
+  temp=subset(temp, ! intervention_id %in% bug.check)
   }
 
-result <- merge(merge(merge(merge(aggregate(intervention_id ~ inception_date, subset(temp, is_horizontal_measure == 1), function(x){length(unique(x))}),
+
+# Adjust to following cases: 
+#  horizontal, 
+#  non-horizontal without any codes, 
+#  non-horizontal with service CPC, 
+#  non-horizontal with goods cpc and HS code
+#  non-horizontal with goods cpc but no HS code 
+#  non-horizontal without goods cpc but HS code 
+# Please create one sheet based on inception_date and one based on creation_date.
+
+result<- merge(merge(merge(merge(aggregate(intervention_id ~ inception_date, subset(temp, is_horizontal_measure == 1), function(x){length(unique(x))}),
                                   aggregate(intervention_id ~ inception_date, subset(temp, is_horizontal_measure == 0 & is.na(affected_products) & is.na(sector_code)), function(x){length(unique(x))}),
                                   by = "inception_date", all = T), aggregate(intervention_id ~ inception_date, subset(temp, is_horizontal_measure == 0 & is.na(affected_products) & !is.na(sector_code)), function(x){length(unique(x))}), by = "inception_date", all = T),
                       data.frame("inception_date" = c(2009:2021), "intervention.id" = rep(0, 13)), by = "inception_date", all = T),
