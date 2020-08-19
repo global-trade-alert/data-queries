@@ -19,8 +19,11 @@ path <- "4 data queries/200817 Interventions/"
 load("data/database replica/database replica - parts - base.Rdata")
 
 # Make temporary table joining gta_intervention and sectoral as well as product data
-temp <- merge(merge(select(gta_intervention, intervention_id, is_horizontal_measure, inception_date), aggregate(affected_products ~ intervention_id, gta_affected_tariff_line, c), by = "intervention_id", all.x = T),
-              aggregate(sector_code ~ intervention_id, gta_affected_sector, c), by = "intervention_id", all.x = T)
+temp=merge(select(gta_intervention, state_act_id, intervention_id, is_horizontal_measure, inception_date), 
+           gta_state_act[,c("state_act_id","creation_date")], by="state_act_id")
+temp$incl_hs=as.numeric(temp$intervention_id %in% gta_affected_tariff_line$intervention_id)
+temp$incl_cpc=as.numeric(temp$intervention_id %in% gta_affected_sector$intervention_id)
+
 temp <- subset(temp, !is.na(inception_date))
 temp$inception_date <- str_sub(as.character(temp$inception_date), 1, 4)
 
