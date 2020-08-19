@@ -10,6 +10,7 @@ rm(list = ls())
 
 library(gtalibrary)
 library(tidyverse)
+library(data.table)
 
 gta_setwd()
 path <- "4 data queries/200817 Interventions/"
@@ -28,7 +29,8 @@ temp$incl_cpc=as.numeric(temp$intervention_id %in% gta_affected_sector$intervent
 temp$is_service=as.numeric(temp$intervention_id %in% subset(gta_affected_sector, sector_code>500)$intervention_id)
 temp <- subset(temp, !is.na(inception_date))
 
-temp$inception_date <- str_sub(as.character(temp$inception_date), 1, 4)
+temp$inception_date <- year(temp$inception_date)
+temp$creation_date <- year(temp$creation_date)
 
 # Count measures
 # result <- data.frame("Type of intervention" = c("horizontal", "non-horizontal and have no sector or HS codes", "non-horizontal and have sector codes but no HS codes",
