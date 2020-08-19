@@ -41,6 +41,15 @@ temp$creation_date <- year(temp$creation_date)
 #                                                                length(unique(subset(temp, is_horizontal_measure == 0 & !is.na(affected_products) & is.na(sector_code))$intervention_id)),
 #                                                                length(unique(subset(temp, is_horizontal_measure == 0 & !is.na(affected_products) & !is.na(sector_code))$intervention_id))))
 
+# bug check: horizontal interventions that include a sector or product code
+bug.check=subset(temp, is_horizontal_measure==1 & (incl_hs==1 | incl_cpc==1))$intervention_id
+if(length(bug.check)>0){
+  
+  bug.xlsx=subset(merge(select(gta_state_act, state_act_id, title), select(gta_intervention, state_act_id, intervention_id), by="state_act_id"),
+                  intervention_id %in% bug.check)
+  xlsx::write.xlsx(bug.xlsx, file="GTA quality control - Horizontal interventions incl sector or product codes.xlsx", row.names = F)
+  }
+
 result <- merge(merge(merge(merge(aggregate(intervention_id ~ inception_date, subset(temp, is_horizontal_measure == 1), function(x){length(unique(x))}),
                                   aggregate(intervention_id ~ inception_date, subset(temp, is_horizontal_measure == 0 & is.na(affected_products) & is.na(sector_code)), function(x){length(unique(x))}),
                                   by = "inception_date", all = T), aggregate(intervention_id ~ inception_date, subset(temp, is_horizontal_measure == 0 & is.na(affected_products) & !is.na(sector_code)), function(x){length(unique(x))}), by = "inception_date", all = T),
