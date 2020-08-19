@@ -24,7 +24,10 @@ temp=merge(select(gta_intervention, state_act_id, intervention_id, is_horizontal
 temp$incl_hs=as.numeric(temp$intervention_id %in% gta_affected_tariff_line$intervention_id)
 temp$incl_cpc=as.numeric(temp$intervention_id %in% gta_affected_sector$intervention_id)
 
+# cleaning
+temp$is_service=as.numeric(temp$intervention_id %in% subset(gta_affected_sector, sector_code>500)$intervention_id)
 temp <- subset(temp, !is.na(inception_date))
+
 temp$inception_date <- str_sub(as.character(temp$inception_date), 1, 4)
 
 # Count measures
