@@ -119,10 +119,11 @@ names(trade.per.hs.food)=c("HS code","Affected Trade Value","Global Exports","Af
 write.xlsx(trade.per.hs.food, file=paste0(output.path, "Trade coverage stats.xlsx"), sheetName = "Export shares - food", row.names = F)
 
 
+
 # MEDICAL
 
-trade.per.hs.medical=merge(aggregate(trade.value ~ hs6, unique(subset(trade.coverage.abs, hs6 %in% hs.food)),sum),
-                        aggregate(trade.value ~ hs6, unique(subset(trade.base.bilateral, hs6 %in% hs.food)),sum),
+trade.per.hs.medical=merge(aggregate(trade.value ~ hs6, unique(subset(trade.coverage.abs, hs6 %in% hs.med)),sum),
+                        aggregate(trade.value ~ hs6, unique(subset(trade.base.bilateral, hs6 %in% hs.med)),sum),
                         by=c("hs6"), all=T)
 trade.per.hs.medical[is.na(trade.per.hs.medical)]=0
 
@@ -130,25 +131,5 @@ trade.per.hs.medical$trade.share=trade.per.hs.medical$trade.value.x/trade.per.hs
 names(trade.per.hs.medical)=c("HS code","Affected Trade Value","Global Exports","Affected Trade Share")
 write.xlsx(trade.per.hs.medical, file=paste0(output.path, "Trade coverage stats.xlsx"), sheetName = "Export shares - medical", row.names = F, append=T)
 
-
-
-
-
-# Prettify results
-
-# FOOD
-final.food <- merge(codes.food, trade.per.hs.food, by.x = "hs12.4digit", by.y = "hs4")
-
-# Check if any hs17 differs from hs12
-sum(final.food$hs12.4digit - final.food$HS.2017...4.digit) > 0 # SHOULD BE FALSE
-
-final.food <- unique(final.food[,c("hs17.4digit", "Group","Product.Description","global.share")])
-
-# MEDICAL
-final.food <- merge(codes.food, trade.per.hs.food, by.x = "hs12.4digit", by.y = "hs4")
-
-# Check if any hs17 differs from hs12
-sum(final.food$hs12.4digit - final.food$HS.2017...4.digit) > 0 # SHOULD BE FALSE
-
-final.food <- unique(final.food[,c("hs17.4digit", "Group","Product.Description","global.share")])
+hs.med[!hs.med %in% trade.per.hs.medical$`HS code`]
 
