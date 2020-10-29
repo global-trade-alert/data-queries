@@ -101,6 +101,10 @@ if(nrow(frozen.partners)>0){
 }
 
 
+## removign interventions and restricting to unique i.un-hs-a.un tuples
+trade.coverage.abs=unique(trade.coverage.abs[,c("i.un","hs6","a.un","trade.value")])
+
+
 # Calculate trade shares for food and medical separately
 
 #Add 4digit hs codes
