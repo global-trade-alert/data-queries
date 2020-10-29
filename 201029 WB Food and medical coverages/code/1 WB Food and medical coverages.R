@@ -30,25 +30,24 @@ gta_sql_pool_open(db.title=database,
 codes.food <- read.xlsx(paste0(data.path, "List_of_Products_-_102820.xlsx"),sheetIndex = 1)
 names(codes.food)=c("group","hs","description")
 
-hs.food=gta_hs_code_check(codes.food$hs)
+hs.food=as.numeric(gta_hs_code_check(codes.food$hs))
 
 ## did this via a google Sheet. Function did not work proper.
 hs.med=c(190110, 210610, 210690, 220710, 220890, 284700, 290512, 293621, 293622, 293623, 293624, 293625, 293626, 293627, 293628, 293629, 293690, 294110, 294120, 294130, 294140, 294150, 294190, 294200, 300120, 300190, 300210, 300210, 300210, 300210, 300210, 300210, 300220, 300290, 300310, 300320, 300331, 300339, 300340, 300340, 300340, 300340, 300390, 300390, 300410, 300420, 300431, 300432, 300439, 300440, 300440, 300440, 300440, 300450, 300490, 300490, 300510, 300590, 300610, 300620, 300630, 300650, 300670, 300691, 300692, 340111, 340119, 340120, 340130, 340211, 340212, 340213, 340219, 340220, 340290, 350400, 350790, 370110, 370210, 380894, 382100, 382200, 382490, 390421, 391610, 391620, 391690, 392329, 392390, 392620, 392690, 401490, 401511, 401519, 401590, 481810, 481890, 560311, 560312, 560313, 560314, 560391, 560392, 560393, 560394, 560410, 560600, 590700, 600240, 600290, 611300, 611420, 611430, 611490, 611610, 621010, 621020, 621030, 621040, 621050, 621132, 621133, 621139, 621142, 621143, 621149, 621600, 621790, 630790, 650500, 650610, 701710, 701720, 701790, 721790, 732690, 760410, 760429, 761699, 841391, 841920, 842129, 842139, 842199, 847989, 854442, 900490, 901050, 901110, 901180, 901811, 901812, 901813, 901814, 901819, 901820, 901831, 901832, 901839, 901850, 901890, 901920, 902000, 902150, 902212, 902213, 902214, 902219, 902221, 902229, 902230, 902290, 902511, 902519, 902780, 903020, 940290, 961900, 390210)
 
 # Retrieve interventions affecting these products in 2012
-
-gta_hs_vintage_converter()
-
+wb.hs= unique(c(hs.food, hs.med))
 gta_data_slicer(gta.evaluation = c("Red","Amber"),
-                hs.codes = unique(c(codes.food$hs12, codes.medical$hs12)),
+                hs.codes = wb.hs,
                 implementation.period = c("2020-01-01", "2020-12-31"),
+                intervention.type=c("Export ban"),
+                keep.type = T,
                 keep.implementation.na = F,
                 keep.hs = T)
 
 
-gta.inclusion=c("GTA - published")
+
 wb.interventions <- unique(master.sliced$intervention.id)
-wb.hs=unique(c(codes.food$hs12, codes.medical$hs12))
 
 trade.coverage=gta_sql_get_value(paste0("SELECT DISTINCT gatl.intervention_id, tariff_line_code as hs6, gi.affected_flow_id, gj.un_code as i_un
                                                  FROM gta_affected_tariff_line gatl
@@ -81,10 +80,6 @@ trade.coverage=subset(trade.coverage, hs6 %in% wb.hs)
 
 gta_trade_value_bilateral(hs.codes = wb.hs, trade.data = 2019)
 
-coverage.imports=merge(subset(trade.coverage, affected.flow.id==1),
-                       trade.base.bilateral,
-                       by=c("i.un","hs6"), all.x=T)
-
 setnames(trade.coverage, "i.un","t.un")
 coverage.exports=merge(subset(trade.coverage, affected.flow.id==2),
                        trade.base.bilateral,
@@ -93,8 +88,7 @@ setnames(coverage.exports, "i.un","a.un")
 setnames(coverage.exports, "t.un","i.un")
 setnames(trade.coverage, "t.un","i.un")
 
-trade.coverage.abs=rbind(coverage.exports,
-                         coverage.imports)
+trade.coverage.abs=coverage.exports
 
 if(nrow(frozen.partners)>0){
   
