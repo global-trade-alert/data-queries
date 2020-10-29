@@ -112,16 +112,15 @@ trade.base.bilateral$hs4 <- as.numeric(substr(sprintf("%06s",as.character(trade.
 
 # Metric 1: The absolute value of global exports or imports of the affected HS codes. To avoid confusion, this is 1 USD value per row.
 
-trade.per.hs.food=aggregate(trade.value ~ hs4, unique(subset(trade.coverage.abs, hs6 %in% unique(codes.food$hs12))),sum)
+trade.per.hs.food=merge(aggregate(trade.value ~ hs4, unique(subset(trade.coverage.abs, hs6 %in% hs.food)),sum),
+                        aggregate(trade.value ~ hs4, unique(subset(trade.base.bilateral, hs6 %in% hs.food)),sum),
+                        by=c("hs4"), all=T)
+trade.per.hs.food[is.na(trade.per.hs.food)]=0
 
-# Metric 2: "What share of the affected goods world trade is implicated by the intervention in this row?"
-trade.per.hs.food$global.share=0
+trade.per.hs.food$trade.share=trade.per.hs.food$trade.value.x/trade.per.hs.food$trade.value.y
+names(trade.per.hs.food)=c("HS code","Affected Trade Value","Global Exports","Affected Trade Share")
+write.xlsx(trade.per.hs.food, file=paste0(output.path, "Trade coverage stats.xlsx"), sheetName = "Export shares - food", row.names = F)
 
-for(hs in unique(subset(trade.per.hs.food, trade.value>0)$hs4)){
-  
-  trade.per.hs.food$global.share[trade.per.hs.food$hs4==hs]=round(trade.per.hs.food$trade.value[trade.per.hs.food$hs4==hs]/sum(trade.base.bilateral$trade.value[trade.base.bilateral$hs4==hs]),6)
-  print(hs)
-}
 
 # MEDICAL
 # Metric 1: The absolute value of global exports or imports of the affected HS codes. To avoid confusion, this is 1 USD value per row.
