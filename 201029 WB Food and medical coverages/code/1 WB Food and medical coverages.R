@@ -28,29 +28,16 @@ gta_sql_pool_open(db.title=database,
 
 # Load codes
 codes.food <- read.xlsx(paste0(data.path, "List_of_Products_-_102820.xlsx"),sheetIndex = 1)
-codes.medical <- read.xlsx(paste0(data.path, "List_of_Products_-_102820.xlsx"),sheetIndex = 2)
-# One code is 8-digit, changing here
-codes.medical$HS.2017 <- as.numeric(substr(sprintf("%06s",as.character(codes.medical$HS.2017)), 1, 6))
+names(codes.food)=c("group","hs","description")
 
-# Create HS12 conversion dfs
-# hs12conversion <- subset(gtalibrary::hs.vintages, origin.vintage == "HS 2017")[,c("origin.code","hs.2012")] # Does our hs.vintage table not include all codes?
-# Loading conversion from csv
-hs12conversion <- read.csv(file="definitions/hs-vintages/hs12-hs17.csv", sep = ";")
-hs12conversion$hs17.4digit <- as.numeric(substr(sprintf("%06s",as.character(hs12conversion$hs17)), 1, 4))
-hs12conversion$hs12.4digit <- as.numeric(substr(sprintf("%06s",as.character(hs12conversion$hs12)), 1, 4))
-hs12.4digit <- hs12conversion[,c("hs17.4digit", "hs12.4digit")]
-hs12.4digit <- unique(hs12.4digit)
+hs.food=gta_hs_code_check(codes.food$hs)
 
-# Convert food codes to HS12 and expand to 6-digit
-codes.food <- merge(codes.food, hs12.4digit, by.x = "HS.2017...4.digit", by.y="hs17.4digit")
-codes.food <- merge(codes.food, hs12conversion, by = "hs12.4digit")
-
-# Convert medical codes to HS12
-codes.medical <- merge(codes.medical, hs12conversion, by.x = "HS.2017", by.y = "hs17", all.x=T)
-# 300210 seems to no longer exist in HS2017
-codes.medical <- subset(codes.medical, is.na(hs12)==F)
+## did this via a google Sheet. Function did not work proper.
+hs.med=c(190110, 210610, 210690, 220710, 220890, 284700, 290512, 293621, 293622, 293623, 293624, 293625, 293626, 293627, 293628, 293629, 293690, 294110, 294120, 294130, 294140, 294150, 294190, 294200, 300120, 300190, 300210, 300210, 300210, 300210, 300210, 300210, 300220, 300290, 300310, 300320, 300331, 300339, 300340, 300340, 300340, 300340, 300390, 300390, 300410, 300420, 300431, 300432, 300439, 300440, 300440, 300440, 300440, 300450, 300490, 300490, 300510, 300590, 300610, 300620, 300630, 300650, 300670, 300691, 300692, 340111, 340119, 340120, 340130, 340211, 340212, 340213, 340219, 340220, 340290, 350400, 350790, 370110, 370210, 380894, 382100, 382200, 382490, 390421, 391610, 391620, 391690, 392329, 392390, 392620, 392690, 401490, 401511, 401519, 401590, 481810, 481890, 560311, 560312, 560313, 560314, 560391, 560392, 560393, 560394, 560410, 560600, 590700, 600240, 600290, 611300, 611420, 611430, 611490, 611610, 621010, 621020, 621030, 621040, 621050, 621132, 621133, 621139, 621142, 621143, 621149, 621600, 621790, 630790, 650500, 650610, 701710, 701720, 701790, 721790, 732690, 760410, 760429, 761699, 841391, 841920, 842129, 842139, 842199, 847989, 854442, 900490, 901050, 901110, 901180, 901811, 901812, 901813, 901814, 901819, 901820, 901831, 901832, 901839, 901850, 901890, 901920, 902000, 902150, 902212, 902213, 902214, 902219, 902221, 902229, 902230, 902290, 902511, 902519, 902780, 903020, 940290, 961900, 390210)
 
 # Retrieve interventions affecting these products in 2012
+
+gta_hs_vintage_converter()
 
 gta_data_slicer(gta.evaluation = c("Red","Amber"),
                 hs.codes = unique(c(codes.food$hs12, codes.medical$hs12)),
